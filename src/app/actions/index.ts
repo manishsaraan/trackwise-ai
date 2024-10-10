@@ -49,3 +49,13 @@ export async function saveJobApplication(formData: JobFormData) {
     return { success: false, error: "Failed to save job application" };
   }
 }
+
+export async function getAllJobs() {
+  try {
+    const jobs = await prisma.jobApplication.findMany({});
+    return { success: true, jobs };
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    return { success: false, error: "Failed to fetch jobs" };
+  }
+}

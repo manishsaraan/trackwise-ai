@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster, toast } from "sonner";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html data-theme="cmyk" lang="en">
       <body className={inter.className}>
+        <Toaster />
         <div className="navbar bg-base-100">
           <div className="flex-1">
             <a className="btn btn-ghost text-xl">JobAI</a>

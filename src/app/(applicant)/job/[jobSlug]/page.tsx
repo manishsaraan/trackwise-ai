@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { saveApplicantData } from "@/app/actions/applicant";
 import UploadResume from "@/components/UploadResume";
+import { useParams } from "next/navigation";
+import { getAllJobs } from "@/app/actions";
+import { toast } from "sonner"; // Add this import
 
 const schema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -17,11 +20,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function JobApplicationForm({
-  jobApplicationId,
-}: {
-  jobApplicationId: number;
-}) {
+export default function JobApplicationForm() {
+  const { jobSlug } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
@@ -61,13 +61,19 @@ export default function JobApplicationForm({
         resumeUrl: resumeUrl,
         currentSalary: data.currentSalary,
         receiveNotifications: data.receiveNotifications,
-        jobApplicationId: jobApplicationId,
+        jobApplicationId: Number(jobSlug),
       };
 
       const result = await saveApplicantData(applicantData);
 
       if (result.success) {
-        // Handle successful submission (e.g., show success message, redirect)
+        // Show success message using Sonner with a green checkbox
+        toast.success("Application submitted successfully!", {
+          description:
+            "We will review your application and get back to you soon.",
+          position: "top-right",
+          icon: "✅", // Green checkbox icon
+        });
         console.log("Application submitted successfully", result.applicant);
       } else {
         setSubmitError("Failed to submit application. Please try again.");

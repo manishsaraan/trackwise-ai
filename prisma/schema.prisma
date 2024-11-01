@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model JobApplication {
@@ -39,4 +39,30 @@ model Applicant {
   updatedAt            DateTime       @updatedAt
   jobApplication       JobApplication @relation(fields: [jobApplicationId], references: [id])
   jobApplicationId     Int
+  resume               Resume? // One-to-one relation
+}
+
+model Resume {
+  id                  Int       @id @default(autoincrement())
+  personalInformation Json?
+  technicalSkills     String[]
+  softSkills          String[]
+  workExperience      Json[]
+  education           Json[]
+  certifications      Json[]
+  projects            Json[]
+  achievements        String[]
+  languages           Json[]
+  locationInfo        Json?
+  availability        Json?
+  publications        Json[]
+  volunteerWork       String?
+  score               Float?
+  justification       String?
+  applicantId         Int       @unique // Added applicantId with unique constraint
+  applicant           Applicant @relation(fields: [applicantId], references: [id])
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([applicantId])
 }

@@ -1,61 +1,75 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { PineconeStore } from "@langchain/pinecone";
-import { StructuredOutputParser } from "langchain/output_parsers";
-import { Pinecone } from "@pinecone-database/pinecone";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import path from "path";
 import { z } from "zod";
-import fs from "fs/promises";
+import { getScoringData, parseResume } from "@/lib/ai/utilities";
+import prisma from "@/lib/prisma"; // Import the Prisma client
+import { jobDescription } from "@/lib/ai/prompts";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const applicationId = searchParams.get("applicationId");
 
-// ... (keep all your existing functions like formatResumeData, parsePDF, saveResumeToPinecone, etc.)
-
-export async function POST(req: NextRequest) {
-  if (!req.body) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  if (!applicationId) {
+    return NextResponse.json(
+      { error: "No applicationId provided" },
+      { status: 400 }
+    );
   }
 
   try {
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const jobDescription = formData.get("jobDescription") as string | null;
+    // Fetch application data
+    const applicationData = await prisma.applicant.findUnique({
+      where: { id: parseInt(applicationId) },
+      select: {
+        id: true,
+        resumeUrl: true,
+      },
+    });
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
-
-    if (!jobDescription) {
+    if (!applicationData || !applicationData.resumeUrl) {
       return NextResponse.json(
-        { error: "No job description provided" },
-        { status: 400 }
+        { error: "Application not found or resume URL missing" },
+        { status: 404 }
       );
     }
 
-    // Create a temporary file to store the uploaded PDF
-    const tempDir = path.join(process.cwd(), "tmp");
-    await fs.mkdir(tempDir, { recursive: true });
-    const tempFilePath = path.join(tempDir, file.name);
-    const fileBuffer = await file.arrayBuffer();
-    await fs.writeFile(tempFilePath, Buffer.from(fileBuffer));
+    const { resumeUrl } = applicationData;
 
-    // Parse the resume
-    const parsedResume = await parseResume(tempFilePath);
+    // Parse the resume from the URL
+    const parsedResume = await parseResume(resumeUrl);
 
     // Get the scoring data
-    const scoringData = await getScoringData(parsedResume, jobDescription);
+    const scoringData = await getScoringData(
+      parsedResume?.parsedOutput,
+      parsedResume?.parsedOutput2
+    );
 
-    // Clean up the temporary file
-    await fs.unlink(tempFilePath);
-
+    // Save the parsed resume data with applicantId
+    // const savedResume = await prisma.resume.create({
+    //   data: {
+    //     applicantId: applicationData.id, // Add the applicant ID here
+    //     personalInformation: parsedResume.personal_information || {},
+    //     technicalSkills: parsedResume.technical_skills || [],
+    //     softSkills: parsedResume.soft_skills || [],
+    //     workExperience: parsedResume.work_experience || [],
+    //     education: parsedResume.education || [],
+    //     certifications: parsedResume.certifications || [],
+    //     projects: parsedResume.projects || [],
+    //     achievements: parsedResume.achievements_and_awards || [],
+    //     languages: parsedResume.languages || [],
+    //     locationInfo: parsedResume.location_and_relocation || {},
+    //     availability: parsedResume.availability || {},
+    //     publications: parsedResume.publications_and_patents || [],
+    //     volunteerWork: parsedResume.volunteer_work_and_interests || null,
+    //     score: scoringData.score,
+    //     justification: scoringData.justification,
+    //   },
+    // });
+    console.log(scoringData, "scoringData");
     return NextResponse.json({
-      fileName: file.name,
-      score: scoringData.score,
-      justification: scoringData.justification,
+      applicationId,
+      // resumeId: savedResume.id,
+      score: scoringData.overall_suitability_score,
+      justification: scoringData.explanation,
     });
   } catch (error) {
     console.error("Error processing resume:", error);
@@ -66,5 +80,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Implement the POST method
-export { POST as POST };
+// Remove the POST method as it's no longer needed

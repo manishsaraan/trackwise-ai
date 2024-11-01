@@ -21,7 +21,7 @@ export async function saveApplicantData(data: ApplicantData) {
   try {
     // Validate the input data
     const validatedData = applicantSchema.parse(data);
-
+    console.log("validatedDat*****************a", validatedData);
     // Save the data to the database
     const applicant = await prisma.applicant.create({
       data: validatedData,
@@ -54,5 +54,15 @@ export async function uploadResume(formData: FormData) {
   } catch (error) {
     console.error("Error uploading file:", error);
     return { success: false, error: "Failed to upload resume" };
+  }
+}
+
+export async function getAllApplications() {
+  try {
+    const applications = await prisma.applicant.findMany({});
+    return { success: true, applications };
+  } catch (error) {
+    console.error("Error fetching applications:", error);
+    return { success: false, error: "Failed to fetch applications" };
   }
 }

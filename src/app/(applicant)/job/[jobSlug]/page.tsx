@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { saveApplicantData } from "@/app/actions/applicant";
+import { getAllApplications, saveApplicantData } from "@/app/actions/applicant";
 import UploadResume from "@/components/UploadResume";
 import { useParams } from "next/navigation";
 import { getAllJobs } from "@/app/actions";
@@ -26,6 +26,15 @@ export default function JobApplicationForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      const result = await getAllApplications();
+      console.log(result);
+    };
+
+    fetchApplications();
+  }, []);
 
   const {
     register,
@@ -100,6 +109,7 @@ export default function JobApplicationForm() {
             id="firstName"
             {...register("firstName")}
             className="input input-bordered"
+            autoComplete="off"
           />
           {errors.firstName && (
             <span className="text-error">{errors.firstName.message}</span>
@@ -115,6 +125,7 @@ export default function JobApplicationForm() {
             id="lastName"
             {...register("lastName")}
             className="input input-bordered"
+            autoComplete="off"
           />
           {errors.lastName && (
             <span className="text-error">{errors.lastName.message}</span>
@@ -130,6 +141,7 @@ export default function JobApplicationForm() {
             id="email"
             {...register("email")}
             className="input input-bordered"
+            autoComplete="off"
           />
           {errors.email && (
             <span className="text-error">{errors.email.message}</span>
@@ -154,6 +166,7 @@ export default function JobApplicationForm() {
             id="currentSalary"
             {...register("currentSalary", { valueAsNumber: true })}
             className="input input-bordered"
+            autoComplete="off"
           />
           {errors.currentSalary && (
             <span className="text-error">{errors.currentSalary.message}</span>

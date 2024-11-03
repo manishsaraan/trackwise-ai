@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* custom css */
+.group:focus-within .group-hover\:opacity-100 {
+  opacity: 0 !important;
+}

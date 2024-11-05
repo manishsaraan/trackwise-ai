@@ -1,60 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { jobFormSchema, FormData } from "@/lib/validations/job-form";
 import { saveJobApplication } from "@/app/actions";
-
-// Define the schema for form validation (same as in jobActions.ts)
-const jobFormSchema = z
-  .object({
-    jobTitle: z.string().min(3, "Job title must be at least 3 characters"),
-    company: z.string().min(2, "Company name must be at least 2 characters"),
-    location: z.string().min(2, "Location must be at least 2 characters"),
-    jobDescription: z
-      .string()
-      .min(10, "Job description must be at least 10 characters"),
-    position: z.enum(["Full-time", "Part-time", "Contract", "Internship"], {
-      errorMap: () => ({ message: "Please select a valid position" }),
-    }),
-    salaryMin: z.number().nullable(),
-    salaryMax: z.number().nullable(),
-    workMode: z.enum(["Remote", "On-site", "Hybrid"], {
-      errorMap: () => ({ message: "Please select a valid work mode" }),
-    }),
-    experienceMin: z.number().min(0, "Minimum experience must be 0 or greater"),
-    experienceMax: z.number().min(0, "Maximum experience must be 0 or greater"),
-    hideCompensation: z.boolean().optional(),
-    questions: z
-      .array(
-        z
-          .string()
-          .min(1, "Question is required")
-          .max(200, "Question cannot exceed 200 characters")
-      )
-      .max(5, "Maximum 5 questions allowed"),
-    dontPreferMin: z.boolean().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.dontPreferMin) {
-      if (data.salaryMin === null || data.salaryMin === undefined) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Minimum salary is required",
-          path: ["salaryMin"],
-        });
-      }
-    }
-  })
-  .refine((data) => data.experienceMax >= data.experienceMin, {
-    message:
-      "Maximum experience must be greater than or equal to minimum experience",
-    path: ["experienceMax"],
-  });
-
-// Infer the type from the schema
-type FormData = z.infer<typeof jobFormSchema>;
 
 const JobApplicationForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,12 +28,25 @@ const JobApplicationForm: React.FC = () => {
   const {
     register,
     watch,
+    setValue,
     handleSubmit,
     formState: { errors },
+    reset,
+    getValues,
   } = useForm<FormData>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      questions: [], // Initialize with empty array
+      jobTitle: "",
+      location: "",
+      jobDescription: "",
+      position: undefined,
+      workMode: undefined,
+      experienceMin: undefined,
+      experienceMax: undefined,
+      salaryMin: null,
+      salaryMax: null,
+      dontPreferMin: false,
+      questions: [],
     },
   });
 
@@ -110,26 +73,82 @@ const JobApplicationForm: React.FC = () => {
   const addQuestion = () => {
     if (questions.length < 5) {
       setQuestions([...questions, ""]);
+
+      // Get current questions and add an empty one
+      const currentQuestions = getValues("questions") || [];
+      setValue("questions", [...currentQuestions, ""], {
+        shouldValidate: true,
+      });
     }
   };
 
   const removeQuestion = (indexToRemove: number) => {
+    // Update local state
     setQuestions(questions.filter((_, index) => index !== indexToRemove));
+
+    // Get current questions from form
+    const currentQuestions = getValues("questions") || [];
+
+    // Remove the question from form state and update
+    const newQuestions = currentQuestions.filter(
+      (_, index) => index !== indexToRemove
+    );
+    setValue("questions", newQuestions, {
+      shouldValidate: true, // This will trigger validation after removal
+    });
   };
 
   const onSubmit = async (data: FormData) => {
+    console.log("Form submission started", data);
     setIsSubmitting(true);
     setSubmitResult(null);
 
     try {
-      const result = await saveJobApplication(data);
+      // Transform the form data to match the expected format
+      const jobData = {
+        ...data,
+        workMode: data.workMode,
+        questions: data.questions.filter((q) => q && q.trim().length > 0),
+        salaryMin: data.dontPreferMin ? null : data.salaryMin ?? null,
+        salaryMax: data.dontPreferMin ? null : data.salaryMax ?? null,
+        dontPreferSalary: data.dontPreferMin,
+      };
+
+      console.log("Transformed job data:", jobData);
+      const result = await saveJobApplication(jobData);
+
       if (result.success) {
         setSubmitResult("Job application submitted successfully!");
+        // Optionally reset the form
+        reset({
+          jobTitle: "",
+          location: "",
+          jobDescription: "",
+          position: "",
+          workMode: "",
+          experienceMin: undefined,
+          experienceMax: undefined,
+          salaryMin: null,
+          salaryMax: null,
+          dontPreferMin: false,
+          questions: [],
+        });
+        // Reset questions state
+        setQuestions([]);
       } else {
-        setSubmitResult(`Error: ${result.error}`);
+        // Handle validation errors
+        if (result.validationErrors) {
+          const errorMessage = result.validationErrors
+            .map((err) => `${err.path.join(".")}: ${err.message}`)
+            .join("\n");
+          setSubmitResult(`Validation Error: ${errorMessage}`);
+        } else {
+          setSubmitResult(`Error: ${result.error}`);
+        }
       }
     } catch (error) {
       setSubmitResult("Error submitting job application. Please try again.");
+      console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -137,6 +156,14 @@ const JobApplicationForm: React.FC = () => {
 
   const dontPreferSalary = watch("dontPreferMin");
 
+  useEffect(() => {
+    if (dontPreferSalary) {
+      setValue("salaryMin", null);
+      setValue("salaryMax", null);
+    }
+  }, [dontPreferSalary, setValue]);
+
+  console.log("errors", errors, getValues());
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-4">
       <div className="form-control w-full mb-4">
@@ -261,7 +288,7 @@ const JobApplicationForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="form-control mb-4">
+      <div className="form-control mb-4 hidden">
         <label className="label cursor-pointer justify-start gap-2">
           <input
             type="checkbox"
@@ -448,10 +475,19 @@ const JobApplicationForm: React.FC = () => {
 
       <button
         type="submit"
-        className={`btn btn-primary ${isSubmitting ? "loading" : ""}`}
+        className={`btn btn-primary w-full ${
+          isSubmitting ? "btn-disabled" : ""
+        }`}
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Submitting..." : "Submit Job Application"}
+        {isSubmitting ? (
+          <>
+            <span className="loading loading-spinner"></span>
+            Submitting...
+          </>
+        ) : (
+          "Submit Job Application"
+        )}
       </button>
 
       {submitResult && (

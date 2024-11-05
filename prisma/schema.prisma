@@ -14,17 +14,41 @@ datasource db {
 }
 
 model JobApplication {
-  id             Int         @id @default(autoincrement())
-  jobTitle       String
-  company        String
-  location       String
-  jobDescription String
-  position       String
-  salaryMin      Int
-  salaryMax      Int
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  applicants     Applicant[]
+  id               Int           @id @default(autoincrement())
+  jobTitle         String
+  company          String
+  location         String
+  jobDescription   String
+  position         String
+  workMode         WorkMode // Remote/Onsite/Hybrid
+  experienceMin    Int
+  experienceMax    Int
+  salaryMin        Int? // Optional if dontPreferSalary is true
+  salaryMax        Int? // Optional if dontPreferSalary is true
+  dontPreferSalary Boolean       @default(false)
+  questions        JobQuestion[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  applicants       Applicant[]
+}
+
+// enum for work mode
+enum WorkMode {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+model JobQuestion {
+  id               Int            @id @default(autoincrement())
+  question         String         @db.Text
+  orderIndex       Int
+  jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+  jobApplicationId Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([jobApplicationId])
 }
 
 model Applicant {

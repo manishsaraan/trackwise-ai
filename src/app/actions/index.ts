@@ -1,58 +1,103 @@
 "use server";
 import { z } from "zod";
 import prisma from "@/lib/prisma"; // Ensure this path is correct for your Prisma client
+import { WorkMode } from "@prisma/client"; // Add this import
+import {
+  jobFormSchema,
+  FormData,
+  workModeEnum,
+} from "@/lib/validations/job-form";
 
-// Define the schema for form validation
-const jobFormSchema = z
-  .object({
-    jobTitle: z.string().min(3, "Job title must be at least 3 characters"),
-    company: z.string().min(2, "Company name must be at least 2 characters"),
-    location: z.string().min(2, "Location must be at least 2 characters"),
-    jobDescription: z
-      .string()
-      .min(10, "Job description must be at least 10 characters"),
-    position: z.enum(["Full-time", "Part-time", "Contract", "Internship"], {
-      errorMap: () => ({ message: "Please select a valid position" }),
-    }),
-    salaryMin: z.number().min(0, "Minimum salary must be 0 or greater"),
-    salaryMax: z.number().min(0, "Maximum salary must be 0 or greater"),
-  })
-  .refine((data) => data.salaryMax > data.salaryMin, {
-    message: "Maximum salary must be greater than minimum salary",
-    path: ["salaryMax"],
-  });
-
-type JobFormData = z.infer<typeof jobFormSchema>;
-
-export async function saveJobApplication(formData: JobFormData) {
-  console.log("formData", formData);
-  // Validate the input data
-  const validatedData = jobFormSchema.parse(formData);
-
+export async function saveJobApplication(formData: FormData) {
   try {
-    // Save the job application to the database
-    const savedJob = await prisma.jobApplication.create({
-      data: {
-        jobTitle: validatedData.jobTitle,
-        company: validatedData.company,
-        location: validatedData.location,
-        jobDescription: validatedData.jobDescription,
-        position: validatedData.position,
-        salaryMin: validatedData.salaryMin,
-        salaryMax: validatedData.salaryMax,
-      },
+    console.log("formData", formData);
+    // Validate the input data
+    const validatedData = jobFormSchema.parse(formData);
+
+    // Create the job application with questions in a transaction
+    const savedJob = await prisma.$transaction(async (tx) => {
+      // First, create the job application
+      const workMode = workModeEnum[validatedData.workMode];
+      console.log("workMode", workMode);
+      const job = await tx.jobApplication.create({
+        data: {
+          jobTitle: validatedData.jobTitle,
+          company: "Test",
+          location: validatedData.location,
+          jobDescription: validatedData.jobDescription,
+          position: validatedData.position,
+          workMode: workMode as WorkMode,
+          experienceMin: validatedData.experienceMin,
+          experienceMax: validatedData.experienceMax,
+          dontPreferSalary: validatedData.dontPreferMin,
+          salaryMin: validatedData.salaryMin,
+          salaryMax: validatedData.salaryMax,
+        },
+      });
+
+      // If there are questions, create them
+      if (validatedData.questions.length > 0) {
+        await tx.jobQuestion.createMany({
+          data: validatedData.questions.map((question, index) => ({
+            question,
+            orderIndex: index + 1,
+            jobApplicationId: job.id,
+          })),
+        });
+      }
+
+      // Return the job with its questions
+      return tx.jobApplication.findUnique({
+        where: { id: job.id },
+        include: {
+          questions: {
+            orderBy: {
+              orderIndex: "asc",
+            },
+          },
+        },
+      });
     });
 
-    return { success: true, job: savedJob };
+    return {
+      success: true,
+      job: savedJob,
+      message: "Job application saved successfully",
+    };
   } catch (error) {
     console.error("Error saving job application:", error);
-    return { success: false, error: "Failed to save job application" };
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: "Validation failed",
+        validationErrors: error.errors,
+      };
+    }
+
+    return {
+      success: false,
+      error: "Failed to save job application",
+      message:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
   }
 }
 
 export async function getAllJobs() {
   try {
-    const jobs = await prisma.jobApplication.findMany({});
+    const jobs = await prisma.jobApplication.findMany({
+      include: {
+        questions: {
+          orderBy: {
+            orderIndex: "asc",
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     return { success: true, jobs };
   } catch (error) {
     console.error("Error fetching jobs:", error);

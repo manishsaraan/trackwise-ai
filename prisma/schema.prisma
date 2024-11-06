@@ -40,30 +40,35 @@ enum WorkMode {
 }
 
 model JobQuestion {
-  id               Int            @id @default(autoincrement())
-  question         String         @db.Text
+  id               Int              @id @default(autoincrement())
+  question         String           @db.Text
   orderIndex       Int
-  jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+  answers          QuestionAnswer[]
+  jobApplication   JobApplication   @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
   jobApplicationId Int
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   @@index([jobApplicationId])
 }
 
 model Applicant {
-  id                   Int            @id @default(autoincrement())
+  id                   Int              @id @default(autoincrement())
   firstName            String
   lastName             String
   email                String
+  phone                String
   resumeUrl            String
-  currentSalary        Int?
-  receiveNotifications Boolean
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  jobApplication       JobApplication @relation(fields: [jobApplicationId], references: [id])
+  currentSalary        Int
+  receiveNotifications Boolean          @default(false)
+  answers              QuestionAnswer[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  jobApplication       JobApplication   @relation(fields: [jobApplicationId], references: [id])
   jobApplicationId     Int
-  resume               Resume? // One-to-one relation
+  resume               Resume?
+
+  @@index([jobApplicationId])
 }
 
 model Resume {
@@ -83,10 +88,24 @@ model Resume {
   volunteerWork       String?
   score               Float?
   justification       String?
-  applicantId         Int       @unique // Added applicantId with unique constraint
+  applicantId         Int       @unique
   applicant           Applicant @relation(fields: [applicantId], references: [id])
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  @@index([applicantId])
+}
+
+model QuestionAnswer {
+  id          Int         @id @default(autoincrement())
+  answer      String      @db.Text
+  question    JobQuestion @relation(fields: [questionId], references: [id])
+  questionId  Int
+  applicant   Applicant   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  applicantId Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([questionId])
   @@index([applicantId])
 }

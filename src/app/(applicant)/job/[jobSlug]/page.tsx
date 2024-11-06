@@ -63,7 +63,7 @@ async function JobApplicationPage({ params }: { params: { jobSlug: string } }) {
         </div>
 
         {/* Application Form */}
-        <JobApplicationForm questions={jobData.questions} />
+        <JobApplicationForm jobId={jobData.id} questions={jobData.questions} />
       </div>
     </div>
   );

@@ -4,7 +4,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import UploadResume from "@/components/UploadResume";
+import { saveApplicantData } from "@/app/actions/applicant";
 
 // Validation schema
 const applicationSchema = z.object({
@@ -24,7 +27,6 @@ const applicationSchema = z.object({
     .refine((val) => val <= 100000000, "Please enter a reasonable amount"),
   resume: z.string().min(1, "Resume is required"),
   receiveEmails: z.boolean().optional(),
-  // Updated answers validation
   answers: z
     .array(z.string().min(50, "Answer must be at least 50 characters long"))
     .optional(),
@@ -34,13 +36,18 @@ type ApplicationFormData = z.infer<typeof applicationSchema>;
 
 interface JobApplicationFormProps {
   questions: string[];
+  jobId: number; // Add jobId prop
 }
 
-export function JobApplicationForm({ questions }: JobApplicationFormProps) {
+export function JobApplicationForm({
+  questions,
+  jobId,
+}: JobApplicationFormProps) {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     watch,
     setValue,
   } = useForm<ApplicationFormData>({
@@ -52,8 +59,42 @@ export function JobApplicationForm({ questions }: JobApplicationFormProps) {
   });
 
   const onSubmit = async (data: ApplicationFormData) => {
-    console.log(data);
-    // Add form submission logic here
+    try {
+      // Show loading toast
+      const loadingToast = toast.loading("Submitting your application...");
+
+      // Prepare data for submission
+      const submissionData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        resumeUrl: data.resume,
+        currentSalary: parseInt(data.currentCtc.toString()),
+        receiveNotifications: data.receiveEmails || false,
+        jobApplicationId: jobId,
+        answers: data.answers || [],
+      };
+
+      const result = await saveApplicantData(submissionData);
+      console.log(result);
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
+      if (result.success && result.applicant) {
+        // Show success toast
+        toast.success("Application submitted successfully!");
+        // Redirect to success page
+        router.push(`/application-success/${result.applicant.id}`);
+      } else {
+        // Show error toast with specific message if available
+        toast.error(result.error || "Failed to submit application");
+      }
+    } catch (error) {
+      // Show error toast
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Application submission error:", error);
+    }
   };
 
   const handleUploadSuccess = (url: string) => {
@@ -61,6 +102,7 @@ export function JobApplicationForm({ questions }: JobApplicationFormProps) {
       shouldValidate: true,
       shouldDirty: true,
     });
+    toast.success("Resume uploaded successfully!");
   };
 
   const handleUploadError = (error: string) => {
@@ -68,6 +110,7 @@ export function JobApplicationForm({ questions }: JobApplicationFormProps) {
       shouldValidate: true,
       shouldDirty: true,
     });
+    toast.error(error || "Failed to upload resume");
   };
 
   return (
@@ -237,8 +280,19 @@ export function JobApplicationForm({ questions }: JobApplicationFormProps) {
           </div>
 
           <div className="card-actions justify-end">
-            <button type="submit" className="btn btn-primary w-full">
-              Submit Application
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="loading loading-spinner"></span>
+                  Submitting...
+                </>
+              ) : (
+                "Submit Application"
+              )}
             </button>
           </div>
         </form>

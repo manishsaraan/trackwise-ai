@@ -48,7 +48,7 @@ export default function UploadResume({
 
       const result = await uploadResume(formData);
       if (result.success) {
-        onUploadSuccess(result.url);
+        onUploadSuccess(result.url as string);
         setUploadSuccess(true);
       } else {
         onUploadError(result.error || "Failed to upload resume");

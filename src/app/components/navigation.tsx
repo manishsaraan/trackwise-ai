@@ -5,7 +5,7 @@ export default function Navigation() {
     <div className="navbar bg-base-100 py-5 px-10">
       <div className="navbar-start">
         <div className="flex-1">
-          <a className="text-xl font-bold">Job AI</a>
+          <a className="text-xl font-bold">TrackWiseAI</a>
         </div>
       </div>
       <div className="navbar-center">

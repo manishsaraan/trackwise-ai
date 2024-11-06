@@ -10,10 +10,9 @@ import {
 
 export async function saveJobApplication(formData: FormData) {
   try {
-    console.log("formData", formData);
     // Validate the input data
     const validatedData = jobFormSchema.parse(formData);
-
+    console.log("validatedData", validatedData);
     // Create the job application with questions in a transaction
     const savedJob = await prisma.$transaction(async (tx) => {
       // First, create the job application
@@ -102,5 +101,46 @@ export async function getAllJobs() {
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return { success: false, error: "Failed to fetch jobs" };
+  }
+}
+
+export async function getJobBySlug(slug: string) {
+  try {
+    const job = await prisma.jobApplication.findUnique({
+      where: {
+        id: parseInt(slug),
+      },
+      include: {
+        questions: {
+          orderBy: {
+            orderIndex: "asc",
+          },
+        },
+      },
+    });
+
+    if (!job) {
+      return null;
+    }
+
+    // Transform the data to match the expected format
+    return {
+      id: job.id,
+      title: job.jobTitle,
+      company: job.company,
+      location: job.location,
+      salary: job.dontPreferSalary
+        ? "Salary not disclosed"
+        : `$${job.salaryMin} - $${job.salaryMax}`,
+      workMode: job.workMode,
+      description: job.jobDescription,
+      position: job.position,
+      experienceRange: `${job.experienceMin} - ${job.experienceMax} years`,
+      questions: job.questions.map((q) => q.question),
+      createdAt: job.createdAt,
+    };
+  } catch (error) {
+    console.error("Error fetching job by slug:", error);
+    throw new Error("Failed to fetch job details");
   }
 }

@@ -222,7 +222,7 @@ export async function saveResumeToPinecone(docs: any, pdfFilePath: string) {
 
 export function getModel() {
   const model = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo",
+    modelName: "gpt-4o",
     temperature: 0, // Set temperature to 0 for deterministic output
     openAIApiKey: OPENAI_API_KEY,
   });

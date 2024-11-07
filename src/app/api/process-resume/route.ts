@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { getScoringData, parseResume } from "@/lib/ai/utilities";
-import prisma from "@/lib/prisma"; // Import the Prisma client
-import { jobDescription } from "@/lib/ai/prompts";
+import prisma from "@/lib/prisma";
+import { ApplicantStatus } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -17,25 +16,22 @@ export async function GET(req: NextRequest) {
 
   try {
     // Fetch application data
-    const applicationData = await prisma.applicant.findUnique({
+    const applicant = await prisma.applicant.findUnique({
       where: { id: parseInt(applicationId) },
-      select: {
-        id: true,
-        resumeUrl: true,
+      include: {
+        jobApplication: true,
       },
     });
 
-    if (!applicationData || !applicationData.resumeUrl) {
+    if (!applicant || !applicant.resumeUrl) {
       return NextResponse.json(
         { error: "Application not found or resume URL missing" },
         { status: 404 }
       );
     }
 
-    const { resumeUrl } = applicationData;
-
     // Parse the resume from the URL
-    const parsedResume = await parseResume(resumeUrl);
+    const parsedResume = await parseResume(applicant.resumeUrl);
 
     // Get the scoring data
     const scoringData = await getScoringData(
@@ -43,33 +39,36 @@ export async function GET(req: NextRequest) {
       parsedResume?.parsedOutput2
     );
 
-    // Save the parsed resume data with applicantId
-    // const savedResume = await prisma.resume.create({
-    //   data: {
-    //     applicantId: applicationData.id, // Add the applicant ID here
-    //     personalInformation: parsedResume.personal_information || {},
-    //     technicalSkills: parsedResume.technical_skills || [],
-    //     softSkills: parsedResume.soft_skills || [],
-    //     workExperience: parsedResume.work_experience || [],
-    //     education: parsedResume.education || [],
-    //     certifications: parsedResume.certifications || [],
-    //     projects: parsedResume.projects || [],
-    //     achievements: parsedResume.achievements_and_awards || [],
-    //     languages: parsedResume.languages || [],
-    //     locationInfo: parsedResume.location_and_relocation || {},
-    //     availability: parsedResume.availability || {},
-    //     publications: parsedResume.publications_and_patents || [],
-    //     volunteerWork: parsedResume.volunteer_work_and_interests || null,
-    //     score: scoringData.score,
-    //     justification: scoringData.justification,
-    //   },
-    // });
     console.log(scoringData, "scoringData");
+    // Update the applicant and job application in a transaction
+    const updatedData = await prisma.$transaction(async (tx) => {
+      // Update the applicant with the new status
+      const updatedApplicant = await tx.applicant.update({
+        where: { id: parseInt(applicationId) },
+        data: {
+          status: "IN_REVIEW" as ApplicantStatus,
+          statusUpdatedAt: new Date(),
+          explanation: scoringData.explanation,
+        },
+      });
+
+      // Update the job application counts
+      const updatedJob = await tx.jobApplication.update({
+        where: { id: applicant.jobApplicationId },
+        data: {
+          inReviewCount: { increment: 1 },
+          totalApplicants: { increment: 1 },
+        },
+      });
+
+      return { updatedApplicant, updatedJob };
+    });
+
     return NextResponse.json({
       applicationId,
-      // resumeId: savedResume.id,
       score: scoringData.overall_suitability_score,
       justification: scoringData.explanation,
+      status: updatedData.updatedApplicant.status,
     });
   } catch (error) {
     console.error("Error processing resume:", error);
@@ -79,5 +78,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-// Remove the POST method as it's no longer needed

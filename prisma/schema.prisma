@@ -20,23 +20,40 @@ model JobApplication {
   location         String
   jobDescription   String
   position         String
-  workMode         WorkMode // Remote/Onsite/Hybrid
+  workMode         WorkMode
   experienceMin    Int
   experienceMax    Int
-  salaryMin        Int? // Optional if dontPreferSalary is true
-  salaryMax        Int? // Optional if dontPreferSalary is true
+  salaryMin        Int?
+  salaryMax        Int?
   dontPreferSalary Boolean       @default(false)
   questions        JobQuestion[]
+  applicants       Applicant[]
+  totalApplicants  Int           @default(0)
+  acceptedCount    Int           @default(0)
+  rejectedCount    Int           @default(0)
+  inReviewCount    Int           @default(0)
+  status           JobStatus     @default(ACTIVE)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-  applicants       Applicant[]
 }
 
-// enum for work mode
 enum WorkMode {
   REMOTE
   ONSITE
   HYBRID
+}
+
+enum JobStatus {
+  ACTIVE
+  PENDING
+  CLOSED
+}
+
+enum ApplicantStatus {
+  PENDING
+  IN_REVIEW
+  ACCEPTED
+  REJECTED
 }
 
 model JobQuestion {
@@ -59,41 +76,19 @@ model Applicant {
   email                String
   phone                String
   resumeUrl            String
+  explanation          String?
   currentSalary        Int
   receiveNotifications Boolean          @default(false)
+  status               ApplicantStatus  @default(PENDING)
+  statusUpdatedAt      DateTime?
   answers              QuestionAnswer[]
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
   jobApplication       JobApplication   @relation(fields: [jobApplicationId], references: [id])
   jobApplicationId     Int
-  resume               Resume?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 
   @@index([jobApplicationId])
-}
-
-model Resume {
-  id                  Int       @id @default(autoincrement())
-  personalInformation Json?
-  technicalSkills     String[]
-  softSkills          String[]
-  workExperience      Json[]
-  education           Json[]
-  certifications      Json[]
-  projects            Json[]
-  achievements        String[]
-  languages           Json[]
-  locationInfo        Json?
-  availability        Json?
-  publications        Json[]
-  volunteerWork       String?
-  score               Float?
-  justification       String?
-  applicantId         Int       @unique
-  applicant           Applicant @relation(fields: [applicantId], references: [id])
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-
-  @@index([applicantId])
+  @@index([status])
 }
 
 model QuestionAnswer {

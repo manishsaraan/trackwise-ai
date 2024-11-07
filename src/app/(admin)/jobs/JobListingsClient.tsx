@@ -15,17 +15,54 @@ import {
   CheckCircle,
   Clock,
   XCircle,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import StatusTabs from "@/app/components/StatusTabs";
 import { useRouter } from "next/navigation";
+import { LucideIcon } from "lucide-react";
 
-interface JobListingsClientProps {
-  initialJobs: any[]; // Replace 'any' with your Job type
+interface StatisticItemProps {
+  count: number;
+  label: string;
+  icon: LucideIcon;
+  color: string;
 }
+
+interface Job {
+  id: number;
+  jobTitle: string;
+  location: string;
+  position: string;
+  workMode: string;
+  posted: string;
+  priority?: "high" | "normal";
+  totalApplicants: number;
+  acceptedCount: number;
+  rejectedCount: number;
+  inReviewCount: number;
+  createdAt: string;
+}
+
+const StatisticItem = ({
+  count,
+  label,
+  icon: Icon,
+  color,
+}: StatisticItemProps) => (
+  <div className="tooltip tooltip-bottom" data-tip={`${count} ${label}`}>
+    <div className="flex items-center gap-1.5 px-2">
+      <Icon className={`w-4 h-4 ${color}`} />
+      <span className="font-medium">{count}</span>
+    </div>
+  </div>
+);
 
 export default function JobListingsClient({
   initialJobs,
-}: JobListingsClientProps) {
+}: {
+  initialJobs: Job[];
+}) {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("active");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -130,18 +167,40 @@ export default function JobListingsClient({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-start gap-4">
                       <div className="text-right">
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 mb-3 px-2">
                           <Users className="w-4 h-4" />
                           <span className="font-medium">
-                            10{job.applicants}
+                            {job.totalApplicants}
                           </span>
                           <span className="text-base-content/60 text-sm">
                             applicants
                           </span>
                         </div>
+
+                        <div className="flex items-center divide-x divide-base-200">
+                          <StatisticItem
+                            count={job.acceptedCount}
+                            label="candidates accepted"
+                            icon={CheckCircle2}
+                            color="text-success"
+                          />
+                          <StatisticItem
+                            count={job.inReviewCount}
+                            label="candidates in review"
+                            icon={AlertCircle}
+                            color="text-warning"
+                          />
+                          <StatisticItem
+                            count={job.rejectedCount}
+                            label="candidates rejected"
+                            icon={XCircle}
+                            color="text-error"
+                          />
+                        </div>
                       </div>
+
                       <div className="dropdown dropdown-end">
                         <label tabIndex={0} className="btn btn-ghost btn-sm">
                           <MoreHorizontal className="w-4 h-4" />

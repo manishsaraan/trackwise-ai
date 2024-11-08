@@ -17,6 +17,13 @@ import {
   XCircle,
   CheckCircle2,
   AlertCircle,
+  Mail,
+  Phone,
+  Copy,
+  Check,
+  Linkedin,
+  Globe,
+  FileText,
 } from "lucide-react";
 import StatusTabs from "@/app/components/StatusTabs";
 import { useRouter } from "next/navigation";
@@ -42,6 +49,9 @@ interface Job {
   rejectedCount: number;
   inReviewCount: number;
   createdAt: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  resumeUrl?: string;
 }
 
 const StatisticItem = ({
@@ -57,6 +67,135 @@ const StatisticItem = ({
     </div>
   </div>
 );
+
+const CopyButton = ({ text, onCopy }: { text: string; onCopy: () => void }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    onCopy();
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button onClick={handleCopy} className="btn btn-ghost btn-xs">
+      {copied ? (
+        <Check className="w-3 h-3 text-success" />
+      ) : (
+        <Copy className="w-3 h-3" />
+      )}
+    </button>
+  );
+};
+
+interface ContactInfoProps {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+}
+
+const contactButtonStyles = {
+  wrapper: "flex items-center gap-2",
+  container:
+    "flex items-center gap-2 bg-base-200 hover:bg-base-300 transition-colors rounded-lg px-3 py-1.5",
+  icon: "w-4 h-4 text-base-content/60",
+  text: "text-sm font-medium",
+  copyButton: "btn btn-ghost btn-xs p-0 h-auto min-h-0",
+  copyIcon: "w-3 h-3",
+};
+
+const ContactInfo = ({ icon: Icon, value, label }: ContactInfoProps) => {
+  const [showCopied, setShowCopied] = useState(false);
+
+  // Function to mask email and phone
+  const getMaskedValue = (value: string, type: "email" | "phone") => {
+    if (type === "email") {
+      const [username, domain] = value.split("@");
+      return `${username.charAt(0)}***@${domain}`;
+    } else {
+      // For phone, show last 4 digits
+      return `•••• ${value.slice(-4)}`;
+    }
+  };
+
+  return (
+    <div className={contactButtonStyles.wrapper}>
+      <div className="tooltip tooltip-bottom" data-tip={value}>
+        <div className={contactButtonStyles.container}>
+          <Icon className={contactButtonStyles.icon} />
+          <span className={contactButtonStyles.text}>
+            {getMaskedValue(value, label.toLowerCase() as "email" | "phone")}
+          </span>
+          <div
+            className="tooltip"
+            data-tip={showCopied ? "Copied!" : "Click to copy"}
+          >
+            <CopyButton
+              text={value}
+              onCopy={() => {
+                setShowCopied(true);
+                setTimeout(() => setShowCopied(false), 2000);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface ExternalLinksProps {
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  resumeUrl?: string;
+}
+
+const ExternalLinks = ({
+  linkedinUrl,
+  websiteUrl,
+  resumeUrl,
+}: ExternalLinksProps) => {
+  const links = [
+    {
+      url: linkedinUrl,
+      icon: Linkedin,
+      label: "View LinkedIn Profile",
+      className: "text-[#0A66C2]", // LinkedIn brand color
+    },
+    {
+      url: websiteUrl,
+      icon: Globe,
+      label: "Visit Website",
+      className: "text-primary",
+    },
+    {
+      url: resumeUrl,
+      icon: FileText,
+      label: "View Resume",
+      className: "text-base-content",
+    },
+  ].filter((link) => link.url); // Only show links that have URLs
+
+  if (links.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-1">
+      {links.map(({ url, icon: Icon, label, className }) => (
+        <div key={label} className="tooltip tooltip-bottom" data-tip={label}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-ghost btn-sm hover:bg-base-200"
+          >
+            <Icon className={`w-4 h-4 ${className}`} />
+          </a>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function JobListingsClient({
   initialJobs,
@@ -168,6 +307,11 @@ export default function JobListingsClient({
                     </div>
 
                     <div className="flex items-start gap-4">
+                      <ExternalLinks
+                        linkedinUrl={job.linkedinUrl}
+                        websiteUrl={job.websiteUrl}
+                        resumeUrl={job.resumeUrl}
+                      />
                       <div className="text-right">
                         <div className="flex items-center gap-1 mb-3 px-2">
                           <Users className="w-4 h-4" />
@@ -230,6 +374,10 @@ export default function JobListingsClient({
                         </ul>
                       </div>
                     </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4 mt-4">
+                    <ContactInfo icon={Mail} value={job.email} label="Email" />
+                    <ContactInfo icon={Phone} value={job.phone} label="Phone" />
                   </div>
                 </div>
               </div>

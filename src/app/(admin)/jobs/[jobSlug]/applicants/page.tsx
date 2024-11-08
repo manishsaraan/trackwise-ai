@@ -1,341 +1,738 @@
 "use client";
-
 import React, { useState } from "react";
 import {
-  UserCheck,
-  UserX,
-  Clock,
+  Plus,
+  Search,
+  Users,
+  MapPin,
   Brain,
-  ChevronDown,
+  Briefcase,
+  Monitor,
   Eye,
-  Mail,
-  Phone,
   Calendar,
   Filter,
-  Search,
+  ArrowUpDown,
+  MoreHorizontal,
+  CheckCircle,
+  Clock,
+  XCircle,
+  CheckCircle2,
   AlertCircle,
-  Briefcase,
-  GraduationCap,
-  Award,
-  MapPin,
+  Mail,
+  Phone,
+  Copy,
+  Check,
+  Linkedin,
   Globe,
   FileText,
-  ExternalLink,
-  Clock4,
 } from "lucide-react";
+import StatusTabs from "@/app/components/StatusTabs";
+import { useRouter } from "next/navigation";
+import { LucideIcon } from "lucide-react";
+import ApplicationDetailsModal from "./ApplicationDetailsModal";
 
-const ApplicantCard = ({ applicant, onStatusChange }) => {
-  const statuses = [
-    { id: "shortlisted", label: "Shortlist Candidate", color: "success" },
-    { id: "interview", label: "Schedule Interview", color: "primary" },
-    { id: "rejected", label: "Reject Application", color: "error" },
-    { id: "on_hold", label: "Put On Hold", color: "warning" },
-  ];
+// Types
+interface StatisticItemProps {
+  count: number;
+  label: string;
+  icon: LucideIcon;
+  color: string;
+}
+
+interface AIMatch {
+  score: number;
+  label: "Excellent" | "Good" | "Average" | "Low";
+  color: "success" | "primary" | "warning" | "error";
+}
+
+interface Applicant {
+  id: number;
+  name: string;
+  location: string;
+  position: string;
+  experience: string;
+  appliedDate: string;
+  aiStatus: "passed" | "rejected" | "review_required";
+  aiAssessment: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  resumeUrl?: string;
+  email: string;
+  phone: string;
+  status: "accepted" | "in-review" | "rejected" | undefined;
+  technical_skills: string[];
+  immediateJoiner: boolean;
+}
+
+// Utility Components
+const StatisticItem = ({
+  count,
+  label,
+  icon: Icon,
+  color,
+}: StatisticItemProps) => (
+  <div className="tooltip tooltip-bottom" data-tip={`${count} ${label}`}>
+    <div className="flex items-center gap-1.5 px-2">
+      <Icon className={`w-4 h-4 ${color}`} />
+      <span className="font-medium">{count}</span>
+    </div>
+  </div>
+);
+
+const CopyButton = ({ text, onCopy }: { text: string; onCopy: () => void }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    onCopy();
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="card bg-base-100 border border-base-200 hover:border-base-300 transition-all">
-      <div className="card-body p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              {applicant.personal_information.name}
-              {applicant.technical_skills.length > 5 && (
-                <span className="badge badge-primary badge-sm">
-                  Strong Tech Stack
-                </span>
-              )}
-              {applicant.work_experience.length > 3 && (
-                <span className="badge badge-success badge-sm">
-                  Experienced
-                </span>
-              )}
-            </h3>
-            <p className="text-base-content/70 text-sm">
-              {applicant.work_experience[0]?.job_title || "No current position"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className={`badge ${
-                applicant.ai_status === "ACCEPTED"
-                  ? "badge-success"
-                  : applicant.ai_status === "REJECTED"
-                  ? "badge-error"
-                  : "badge-warning"
-              } gap-1`}
-            >
-              <Brain className="w-3 h-3" />
-              {applicant.ai_status}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-base-content/60" />
-                <span>
-                  {applicant.personal_information.contact_information.email}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="w-4 h-4 text-base-content/60" />
-                <span>
-                  {
-                    applicant.personal_information.contact_information
-                      .phone_number
-                  }
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="w-4 h-4 text-base-content/60" />
-                <span>
-                  {applicant.location_and_relocation.current_location}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-medium mb-2">Key Skills</h4>
-              <div className="flex flex-wrap gap-1">
-                {applicant.technical_skills.slice(0, 5).map((skill, index) => (
-                  <span key={index} className="badge badge-ghost badge-sm">
-                    {skill}
-                  </span>
-                ))}
-                {applicant.technical_skills.length > 5 && (
-                  <span className="badge badge-ghost badge-sm">
-                    +{applicant.technical_skills.length - 5} more
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-2">
-                Experience & Education
-              </h4>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Briefcase className="w-4 h-4 text-base-content/60" />
-                  <span>
-                    {applicant.work_experience.length} years total experience
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <GraduationCap className="w-4 h-4 text-base-content/60" />
-                  <span>
-                    {applicant.education[0]?.degree} in{" "}
-                    {applicant.education[0]?.field_of_study}
-                  </span>
-                </div>
-                {applicant.certifications.length > 0 && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Award className="w-4 h-4 text-base-content/60" />
-                    <span>
-                      {applicant.certifications.length} certifications
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-medium mb-2">Availability</h4>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="w-4 h-4 text-base-content/60" />
-                  <span>Notice: {applicant.availability.notice_period}</span>
-                </div>
-                {applicant.location_and_relocation.willingness_to_relocate && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Globe className="w-4 h-4 text-base-content/60" />
-                    <span>Open to relocation</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center mt-6 pt-4 border-t border-base-200">
-          <div className="flex items-center gap-2">
-            <button className="btn btn-ghost btn-sm gap-2">
-              <FileText className="w-4 h-4" />
-              View Resume
-            </button>
-            {applicant.personal_information.contact_information
-              .linkedin_profile && (
-              <a
-                href={
-                  applicant.personal_information.contact_information
-                    .linkedin_profile
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-ghost btn-sm gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                LinkedIn
-              </a>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-primary btn-sm">
-                Change Status
-                <ChevronDown className="w-4 h-4" />
-              </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-52"
-              >
-                {statuses.map((status) => (
-                  <li key={status.id}>
-                    <a
-                      className={`text-${status.color}`}
-                      onClick={() => onStatusChange(applicant.id, status.id)}
-                    >
-                      {status.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <button onClick={handleCopy} className="btn btn-ghost btn-xs">
+      {copied ? (
+        <Check className="w-3 h-3 text-success" />
+      ) : (
+        <Copy className="w-3 h-3" />
+      )}
+    </button>
   );
 };
 
-const ApplicantList = () => {
-  const [applicants, setApplicants] = useState([
+// Add this helper function to get AI match details
+const getAIStatusDetails = (status: Applicant["aiStatus"]) => {
+  switch (status) {
+    case "passed":
+      return {
+        label: "AI Passed",
+        color: "success",
+        Icon: CheckCircle2,
+      };
+    case "rejected":
+      return {
+        label: "AI Rejected",
+        color: "error",
+        Icon: XCircle,
+      };
+    case "review_required":
+      return {
+        label: "Review Required",
+        color: "warning",
+        Icon: AlertCircle,
+      };
+  }
+};
+const dummyQuestions: Question[] = [
+  {
+    question: "What interests you most about this position?",
+    answer:
+      "I'm particularly excited about the opportunity to work with cutting-edge technologies and contribute to large-scale applications. The company's focus on innovation and its commitment to professional development align perfectly with my career goals.",
+  },
+  {
+    question:
+      "Describe a challenging project you've worked on and how you handled it.",
+    answer:
+      "I led the migration of a monolithic application to a microservices architecture. The main challenge was ensuring zero downtime during the transition. I implemented a staged migration approach, used feature flags, and conducted extensive testing. The project was successfully completed ahead of schedule with minimal disruption to users.",
+  },
+  {
+    question: "What's your experience with our tech stack?",
+    answer:
+      "I have 4+ years of experience with React, TypeScript, and Node.js. I've built and maintained several production applications using these technologies. I'm also familiar with Next.js and have experience with GraphQL APIs.",
+  },
+  {
+    question: "How do you handle tight deadlines?",
+    answer:
+      "I prioritize tasks based on impact and urgency, communicate proactively with stakeholders, and break down large tasks into manageable chunks. If needed, I'm comfortable putting in extra hours to meet critical deadlines while maintaining code quality.",
+  },
+];
+// Main Page Component
+export default function ApplicantsPage({
+  params,
+}: {
+  params: { jobSlug: string };
+}) {
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState("all");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(
+    null
+  );
+
+  // Define styles
+  const contactButtonStyles = {
+    wrapper: "flex flex-col gap-2",
+    container:
+      "flex items-center gap-2 bg-base-200 hover:bg-base-300 transition-colors rounded-lg px-3 py-1.5 w-[220px]",
+    icon: "w-4 h-4 text-base-content/60 shrink-0",
+    text: "text-sm font-medium truncate",
+    copyWrapper: "ml-auto shrink-0",
+    copyButton: "btn btn-ghost btn-xs p-0 h-auto min-h-0",
+    copyIcon: "w-3 h-3",
+  };
+
+  // Sample data - replace with actual data fetching
+  const initialApplicants: Applicant[] = [
     {
       id: 1,
-      personal_information: {
-        name: "John Doe",
-        contact_information: {
-          email: "john@example.com",
-          phone_number: "+1 234 567 890",
-          linkedin_profile: "https://linkedin.com/in/johndoe",
-        },
-      },
+      name: "John Doe",
+      location: "New York, USA",
+      position: "Senior Frontend Developer",
+      experience: "5 years",
+      appliedDate: "2024-03-15",
+      aiStatus: "passed",
+      aiAssessment:
+        "Strong technical background with excellent problem-solving skills. Experience in React and TypeScript aligns perfectly with role requirements.",
+      linkedinUrl: "https://linkedin.com/in/johndoe",
+      websiteUrl: "https://johndoe.dev",
+      resumeUrl: "/resumes/john-doe.pdf",
+      email: "john.doe@example.com",
+      phone: "+1 234 567 8900",
+      status: "accepted",
       technical_skills: [
         "React",
+        "TypeScript",
         "Node.js",
-        "Python",
+        "GraphQL",
         "AWS",
         "Docker",
         "MongoDB",
       ],
-      work_experience: [
-        {
-          job_title: "Senior Developer",
-          company_name: "Tech Corp",
-          years: 4,
-        },
-      ],
-      education: [
-        {
-          degree: "Bachelor's",
-          field_of_study: "Computer Science",
-        },
-      ],
-      certifications: [
-        {
-          certification_name: "AWS Solutions Architect",
-        },
-      ],
-      location_and_relocation: {
-        current_location: "New York, NY",
-        willingness_to_relocate: true,
-      },
-      availability: {
-        notice_period: "30 days",
-      },
-      ai_status: "ACCEPTED",
+      immediateJoiner: true,
     },
-  ]);
+    {
+      id: 2,
+      name: "Sarah Johnson",
+      location: "London, UK",
+      position: "Full Stack Developer",
+      experience: "3 years",
+      appliedDate: "2024-03-14",
+      aiStatus: "review_required",
+      aiAssessment:
+        "Good technical skills but requires manual review of specific qualifications.",
+      linkedinUrl: "https://linkedin.com/in/sarahjohnson",
+      resumeUrl: "/resumes/sarah-johnson.pdf",
+      email: "sarah.j@example.com",
+      phone: "+44 20 7123 4567",
+      status: "in-review",
+      technical_skills: [
+        "JavaScript",
+        "Python",
+        "Django",
+        "React",
+        "PostgreSQL",
+        "Redis",
+        "REST APIs",
+      ],
+      immediateJoiner: false,
+    },
+    {
+      id: 3,
+      name: "Michael Chen",
+      location: "Singapore",
+      position: "Backend Developer",
+      experience: "7 years",
+      appliedDate: "2024-03-13",
+      aiStatus: "passed",
+      aiAssessment:
+        "Excellent backend expertise with strong system design knowledge. Perfect match for the role.",
+      linkedinUrl: "https://linkedin.com/in/michaelchen",
+      websiteUrl: "https://michaelchen.dev",
+      email: "m.chen@example.com",
+      phone: "+65 9123 4567",
+      status: "accepted",
+      technical_skills: [
+        "Java",
+        "Spring Boot",
+        "Kubernetes",
+        "MySQL",
+        "Redis",
+        "Microservices",
+        "CI/CD",
+      ],
+      immediateJoiner: true,
+    },
+    {
+      id: 4,
+      name: "Emma Wilson",
+      location: "Toronto, Canada",
+      position: "Frontend Developer",
+      experience: "2 years",
+      appliedDate: "2024-03-12",
+      aiStatus: "rejected",
+      aiAssessment:
+        "Skills don't align well with the required technical stack. Limited experience in key technologies.",
+      linkedinUrl: "https://linkedin.com/in/emmawilson",
+      email: "emma.w@example.com",
+      phone: "+1 416 555 0123",
+      status: "rejected",
+      technical_skills: [
+        "React",
+        "Vue.js",
+        "CSS",
+        "Sass",
+        "Webpack",
+        "Jest",
+        "Performance Optimization",
+      ],
+      immediateJoiner: true,
+    },
+    {
+      id: 5,
+      name: "Alex Rodriguez",
+      location: "Madrid, Spain",
+      position: "Full Stack Developer",
+      experience: "4 years",
+      appliedDate: "2024-03-11",
+      aiStatus: "review_required",
+      aiAssessment:
+        "Mixed skill set with some matching requirements. Manual review needed for experience verification.",
+      linkedinUrl: "https://linkedin.com/in/alexrodriguez",
+      websiteUrl: "https://alexdev.es",
+      resumeUrl: "/resumes/alex-rodriguez.pdf",
+      email: "alex.r@example.com",
+      phone: "+34 612 34 56 78",
+      status: "rejected",
+      technical_skills: [
+        "JavaScript",
+        "Angular",
+        "Node.js",
+        "MongoDB",
+        "Express",
+        "Docker",
+        "AWS",
+      ],
+      immediateJoiner: false,
+    },
+    {
+      id: 6,
+      name: "Priya Patel",
+      location: "Mumbai, India",
+      position: "Senior Backend Developer",
+      experience: "6 years",
+      appliedDate: "2024-03-10",
+      aiStatus: "passed",
+      aiAssessment:
+        "Strong backend development skills with excellent database expertise. Great potential for the role.",
+      linkedinUrl: "https://linkedin.com/in/priyapatel",
+      resumeUrl: "/resumes/priya-patel.pdf",
+      email: "priya.p@example.com",
+      phone: "+91 98765 43210",
+      status: "rejected",
+      technical_skills: [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Redis",
+        "Elasticsearch",
+        "System Design",
+        "AWS",
+      ],
+      immediateJoiner: true,
+    },
+    {
+      id: 7,
+      name: "David Kim",
+      location: "Seoul, South Korea",
+      position: "Frontend Developer",
+      experience: "3 years",
+      appliedDate: "2024-03-09",
+      aiStatus: "rejected",
+      aiAssessment:
+        "Insufficient experience level and missing critical required skills for the position.",
+      websiteUrl: "https://davidkim.dev",
+      email: "david.k@example.com",
+      phone: "+82 10-1234-5678",
+      status: "rejected",
+      technical_skills: [
+        "React",
+        "Next.js",
+        "TailwindCSS",
+        "JavaScript",
+        "Firebase",
+        "UI/UX",
+        "Responsive Design",
+      ],
+      immediateJoiner: false,
+    },
+    {
+      id: 8,
+      name: "Lisa Anderson",
+      location: "Sydney, Australia",
+      position: "Full Stack Developer",
+      experience: "4 years",
+      appliedDate: "2024-03-08",
+      aiStatus: "review_required",
+      aiAssessment:
+        "Promising skill set but needs verification of project experience and technical depth.",
+      linkedinUrl: "https://linkedin.com/in/lisaanderson",
+      websiteUrl: "https://lisaanderson.dev",
+      resumeUrl: "/resumes/lisa-anderson.pdf",
+      email: "lisa.a@example.com",
+      phone: "+61 2 9876 5432",
+      status: "rejected",
+      technical_skills: [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "Python",
+        "SQL",
+        "Git",
+        "Agile",
+      ],
+      immediateJoiner: true,
+    },
+  ];
+  const [applicants, setApplicants] = useState(initialApplicants);
 
-  return (
-    <div className="min-h-screen bg-base-100">
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
-            <input
-              type="text"
-              placeholder="Search by name, skills, or location..."
-              className="input input-bordered w-full pl-10"
-            />
-          </div>
-          <div className="flex gap-2">
-            <select className="select select-bordered w-40">
-              <option>All Statuses</option>
-              <option>AI Approved</option>
-              <option>Needs Review</option>
-              <option>Not Qualified</option>
-            </select>
-            <select className="select select-bordered w-40">
-              <option>Experience Level</option>
-              <option>0-2 years</option>
-              <option>3-5 years</option>
-              <option>5+ years</option>
-            </select>
-            <button className="btn btn-outline gap-2">
-              <Filter className="w-4 h-4" />
-              More Filters
-            </button>
-          </div>
-        </div>
+  const statusTabs = [
+    {
+      id: "accepted",
+      label: "Accepted",
+      count: applicants.filter((a) => a.status === "accepted").length,
+      icon: CheckCircle2,
+      color: "success",
+      description: "Accepted candidates",
+    },
+    {
+      id: "in-review",
+      label: "In Review",
+      count: applicants.filter((a) => a.status === "in-review").length,
+      icon: Clock,
+      color: "warning",
+      description: "Applications under review",
+    },
+    {
+      id: "rejected",
+      label: "Rejected",
+      count: applicants.filter((a) => a.status === "rejected").length,
+      icon: XCircle,
+      color: "error",
+      description: "Rejected applications",
+    },
+  ];
 
-        <div className="flex flex-wrap gap-2 mb-6">
-          <button className="btn btn-sm btn-ghost gap-1">
-            <Award className="w-4 h-4" />
-            Certified
-          </button>
-          <button className="btn btn-sm btn-ghost gap-1">
-            <Globe className="w-4 h-4" />
-            Can Relocate
-          </button>
-          <button className="btn btn-sm btn-ghost gap-1">
-            <Clock className="w-4 h-4" />
-            Immediate Joiners
-          </button>
-        </div>
+  // Define the ContactInfo component inside the main component
+  const ContactInfo = ({
+    icon: Icon,
+    value,
+    label,
+  }: {
+    icon: LucideIcon;
+    value: string;
+    label: string;
+  }) => {
+    const [showCopied, setShowCopied] = useState(false);
 
-        <div className="space-y-4">
-          {applicants.map((applicant) => (
-            <ApplicantCard
-              key={applicant.id}
-              applicant={applicant}
-              onStatusChange={(id, status) => {
-                console.log(`Changing status for ${id} to ${status}`);
-              }}
-            />
-          ))}
-        </div>
+    const getMaskedValue = (value: string, type: "email" | "phone") => {
+      if (type === "email") {
+        const [username, domain] = value.split("@");
+        return `${username.charAt(0)}***@${domain}`;
+      }
+      return value;
+    };
 
-        <div className="flex justify-between items-center mt-6">
-          <span className="text-sm text-base-content/60">
-            Showing {applicants.length} applicants
-          </span>
-          <div className="join">
-            <button className="join-item btn btn-sm">«</button>
-            <button className="join-item btn btn-sm btn-active">1</button>
-            <button className="join-item btn btn-sm">2</button>
-            <button className="join-item btn btn-sm">3</button>
-            <button className="join-item btn btn-sm">»</button>
+    return (
+      <div className={contactButtonStyles.wrapper}>
+        <div className="tooltip tooltip-bottom" data-tip={value}>
+          <div className={contactButtonStyles.container}>
+            <Icon className={contactButtonStyles.icon} />
+            <span className={contactButtonStyles.text}>
+              {getMaskedValue(value, label.toLowerCase() as "email" | "phone")}
+            </span>
+            <div
+              className={`tooltip ${contactButtonStyles.copyWrapper}`}
+              data-tip={showCopied ? "Copied!" : "Click to copy"}
+            >
+              <CopyButton
+                text={value}
+                onCopy={() => {
+                  setShowCopied(true);
+                  setTimeout(() => setShowCopied(false), 2000);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-export default ApplicantList;
+  // Define the ExternalLinks component inside the main component
+  const ExternalLinks = ({
+    applicant,
+    linkedinUrl,
+    websiteUrl,
+    resumeUrl,
+  }: {
+    applicant: Applicant;
+    linkedinUrl?: string;
+    websiteUrl?: string;
+    resumeUrl?: string;
+  }) => {
+    const links = [
+      {
+        url: linkedinUrl,
+        icon: Linkedin,
+        label: "View LinkedIn Profile",
+        className: "text-[#0A66C2]",
+        onClick: () => window.open(linkedinUrl, "_blank"),
+      },
+      {
+        url: websiteUrl,
+        icon: Globe,
+        label: "Visit Website",
+        className: "text-primary",
+        onClick: () => window.open(websiteUrl, "_blank"),
+      },
+      {
+        url: resumeUrl,
+        icon: FileText,
+        label: "View Resume",
+        className: "text-base-content",
+        onClick: (e: React.MouseEvent) => {
+          e.preventDefault();
+          setSelectedApplicant(applicant);
+          setIsModalOpen(true);
+        },
+      },
+    ].filter((link) => link.url);
+
+    if (links.length === 0) return null;
+
+    return (
+      <div className="flex items-center gap-1">
+        {links.map(({ url, icon: Icon, label, className, onClick }) => (
+          <div key={label} className="tooltip tooltip-bottom" data-tip={label}>
+            <button
+              onClick={onClick}
+              className="btn btn-ghost btn-sm hover:bg-base-200"
+            >
+              <Icon className={`w-4 h-4 ${className}`} />
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div className="min-h-screen bg-base-100">
+        {/* Header Section */}
+        <div className="border-b border-base-200">
+          <div className="max-w-7xl mx-auto p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold">Applicants</h1>
+                <p className="text-base-content/60 text-sm mt-1">
+                  Manage applications for Full Stack Developer
+                </p>
+              </div>
+            </div>
+
+            <StatusTabs
+              statusTabs={statusTabs}
+              selectedTab={selectedTab}
+              setSelectedTab={setSelectedTab}
+            />
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto p-6">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-40">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          ) : applicants.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-base-content/60">No applicants found</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {applicants.map((applicant) => (
+                <div
+                  key={applicant.id}
+                  className="card bg-base-100 border border-base-200 hover:border-base-300 transition-colors"
+                >
+                  <div className="card-body">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg font-medium">
+                            {applicant.name}
+                          </h3>
+                          {applicant.aiStatus && (
+                            <div
+                              className={`badge gap-1.5 badge-${
+                                getAIStatusDetails(applicant.aiStatus).color
+                              }`}
+                            >
+                              {React.createElement(
+                                getAIStatusDetails(applicant.aiStatus).Icon,
+                                {
+                                  className: "w-3 h-3",
+                                }
+                              )}
+                              <span className="text-xs">
+                                {getAIStatusDetails(applicant.aiStatus).label}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-4 text-sm text-base-content/70">
+                          <span className="flex items-center gap-1">
+                            <Briefcase className="w-4 h-4" />
+                            {applicant.position} , {applicant.location}
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <h4 className="text-sm font-medium mb-2">
+                            Key Skills
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {applicant.technical_skills
+                              .slice(0, 5)
+                              .map((skill, index) => (
+                                <span
+                                  key={index}
+                                  className="badge badge-ghost badge-sm"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                            {applicant.technical_skills.length > 5 && (
+                              <span className="badge badge-ghost badge-sm">
+                                +{applicant.technical_skills.length - 5} more
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-4">
+                        <div className="flex items-center gap-2">
+                          <ExternalLinks
+                            applicant={applicant}
+                            linkedinUrl={applicant.linkedinUrl}
+                            websiteUrl={applicant.websiteUrl}
+                            resumeUrl={applicant.resumeUrl}
+                          />
+
+                          <div className="dropdown dropdown-end">
+                            <label
+                              tabIndex={0}
+                              className="btn btn-ghost btn-sm"
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </label>
+                            <ul
+                              tabIndex={0}
+                              className="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-52"
+                            >
+                              <li>
+                                <a>
+                                  <Eye className="w-4 h-4" />
+                                  View Details
+                                </a>
+                              </li>
+                              <li>
+                                <a>
+                                  <ArrowUpDown className="w-4 h-4" />
+                                  Change Status
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className={contactButtonStyles.wrapper}>
+                          <ContactInfo
+                            icon={Mail}
+                            value={applicant.email}
+                            label="Email"
+                          />
+                          <ContactInfo
+                            icon={Phone}
+                            value={applicant.phone}
+                            label="Phone"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 border-t border-base-200 pt-4">
+                      <div
+                        className={`rounded-lg p-4 ${
+                          applicant.aiStatus === "passed"
+                            ? "bg-success/5 border border-success/20"
+                            : applicant.aiStatus === "review_required"
+                            ? "bg-warning/5 border border-warning/20"
+                            : "bg-error/5 border border-error/20"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`p-2 rounded-lg ${
+                              applicant.aiStatus === "passed"
+                                ? "bg-success/10"
+                                : applicant.aiStatus === "review_required"
+                                ? "bg-warning/10"
+                                : "bg-error/10"
+                            }`}
+                          >
+                            <Brain
+                              className={`w-5 h-5 ${
+                                applicant.aiStatus === "passed"
+                                  ? "text-success"
+                                  : applicant.aiStatus === "review_required"
+                                  ? "text-warning"
+                                  : "text-error"
+                              }`}
+                            />
+                          </div>
+
+                          <div className="space-y-2 flex-1">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium">AI Assessment</h4>
+                              </div>
+                            </div>
+
+                            <div className="text-sm text-base-content/70">
+                              {applicant.aiAssessment}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Add the modal */}
+      {selectedApplicant && (
+        <ApplicationDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedApplicant(null);
+          }}
+          applicant={{
+            name: selectedApplicant.name,
+            resumeUrl:
+              "https://1xqijlcbl8outl7j.public.blob.vercel-storage.com/SACHIN-HANS%20RESUME(1%20YEAR%20%20MERN%20STACK)-Zn33cd0eFxSP8AYEHl2vN9gwdLGhxN.PDF",
+            questions: dummyQuestions,
+          }}
+        />
+      )}
+    </>
+  );
+}

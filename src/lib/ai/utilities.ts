@@ -570,18 +570,15 @@ export async function getScoringData(
   try {
     // Remove any leading/trailing whitespace and newline characters
     const cleanedContent = response2.content?.trim();
-    console.log(
-      cleanedContent,
-      "cleanedContentcleanedContentcleanedContentcleanedContent"
-    );
     // Extract JSON content from markdown code block
+    const jsonContent = cleanedContent.match(/```json\n(.*?)```/s)[1];
+    if (!jsonContent) {
+      console.error("No JSON content found in markdown code block.");
+      return null;
+    }
 
-    console.log(
-      typeof cleanedContent,
-      "cleanedContentcleanedContentcleanedContent"
-    );
     // Parse the JSON string
-    const parsedData = JSON.parse(cleanedContent);
+    const parsedData = JSON.parse(jsonContent);
     return parsedData;
   } catch (error) {
     console.error("Error parsing scoring data:", error);

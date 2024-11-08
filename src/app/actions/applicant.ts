@@ -108,12 +108,14 @@ export async function uploadResume(
   }
 }
 
-export async function getAllApplications() {
+export async function getAllApplicants() {
   try {
-    const applications = await prisma.applicant.findMany({});
-    return { success: true, applications };
+    const applicants = await prisma.applicant.findMany({
+      where: { aiProcessed: true },
+    });
+    return { success: true, applicants };
   } catch (error) {
-    console.error("Error fetching applications:", error);
-    return { success: false, error: "Failed to fetch applications" };
+    console.error("Error fetching applicants:", error);
+    return { success: false, error: "Failed to fetch applicants" };
   }
 }

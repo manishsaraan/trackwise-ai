@@ -244,7 +244,7 @@ export async function parseResume(
   pdfUrl: string
 ): Promise<{ parsedOutput: any; parsedOutput2: any } | undefined> {
   const pdfContent = await parsePDF(pdfUrl);
-  console.log(pdfContent, "00000000pdfContent000000");
+
   const savedResume = await saveResumeToPinecone(pdfContent, pdfUrl);
   const resumeOutput = pdfContent[0].pageContent;
 
@@ -545,7 +545,7 @@ You can integrate this job description parsing prompt with the resume parsing pr
     // Parse the JSON
     const parsedOutput = JSON.parse(correctedResponse);
     const parsedOutput2 = JSON.parse(correctedResponse2);
-    console.log(parsedOutput2, "00000000parsedOutput2000000");
+
     return { parsedOutput, parsedOutput2 };
   } catch (error) {
     console.error("Failed to parse LLM output:", error);
@@ -561,7 +561,6 @@ export async function getScoringData(
   // console.log(formattedResume, "formattedResume");
   const getPrompt = scoringPrompt(parsedPdfData, jobDescription);
 
-  console.log(getPrompt, "00000000getPrompt000000");
   const chain1 = getModel();
   const response2 = await chain1.invoke({
     input: getPrompt,

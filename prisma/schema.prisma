@@ -84,6 +84,8 @@ model Applicant {
   answers              QuestionAnswer[]
   jobApplication       JobApplication   @relation(fields: [jobApplicationId], references: [id])
   jobApplicationId     Int
+  resumeData           Json?
+  aiProcessed          Boolean          @default(false)
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
 

@@ -33,13 +33,19 @@ export async function GET(req: NextRequest) {
     // Parse the resume from the URL
     const parsedResume = await parseResume(applicant.resumeUrl);
 
+    const resumeData = {
+      technicalSkills: parsedResume?.parsedOutput.technical_skills,
+      workExperience: parsedResume?.parsedOutput.work_experience,
+      personalInformation:
+        parsedResume?.parsedOutput.personal_information?.contact_information,
+    };
+
     // Get the scoring data
     const scoringData = await getScoringData(
       parsedResume?.parsedOutput,
       parsedResume?.parsedOutput2
     );
 
-    console.log(scoringData, "scoringData");
     // Update the applicant and job application in a transaction
     const updatedData = await prisma.$transaction(async (tx) => {
       // Update the applicant with the new status
@@ -49,6 +55,8 @@ export async function GET(req: NextRequest) {
           status: "IN_REVIEW" as ApplicantStatus,
           statusUpdatedAt: new Date(),
           explanation: scoringData.explanation,
+          resumeData: resumeData,
+          aiProcessed: true,
         },
       });
 

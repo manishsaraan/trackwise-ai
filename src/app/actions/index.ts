@@ -137,6 +137,9 @@ export async function getJobBySlug(slug: string) {
       position: job.position,
       experienceRange: `${job.experienceMin} - ${job.experienceMax} years`,
       questions: job.questions.map((q) => q.question),
+      acceptedCount: job.acceptedCount,
+      rejectedCount: job.rejectedCount,
+      inReviewCount: job.inReviewCount,
       createdAt: job.createdAt,
     };
   } catch (error) {

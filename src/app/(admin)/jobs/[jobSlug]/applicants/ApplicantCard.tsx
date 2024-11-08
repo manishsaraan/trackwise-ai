@@ -17,6 +17,9 @@ import {
   FileText,
 } from "lucide-react";
 import ContactInfo from "./ContactInfo";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { updateApplicantStatus } from "@/app/actions/applicant";
 
 interface Applicant {
   id: number;
@@ -25,42 +28,70 @@ interface Applicant {
   position: string;
   experience: string;
   appliedDate: string;
-  aiStatus: "passed" | "rejected" | "IN_REVIEW";
+  aiStatus: "PASSED" | "REJECTED" | "IN_REVIEW";
   aiAssessment: string;
   linkedinUrl?: string;
   websiteUrl?: string;
   resumeUrl?: string;
   email: string;
   phone: string;
-  status: "accepted" | "IN_REVIEW" | "rejected" | undefined;
+  status: "ACCEPTED" | "IN_REVIEW" | "REJECTED" | undefined;
   technical_skills: string[];
   immediateJoiner: boolean;
 }
 
-const getAIStatusDetails = (status: Applicant["aiStatus"]) => {
+const getAIStatusDetails = (status: Applicant["status"]) => {
   switch (status) {
-    case "passed":
+    case "ACCEPTED":
       return {
-        label: "AI Passed",
+        label: "Accepted",
         color: "success",
         Icon: CheckCircle2,
       };
-    case "rejected":
+    case "REJECTED":
       return {
-        label: "AI Rejected",
-        color: "error",
+        label: "Rejected",
+        color: "warning",
         Icon: XCircle,
       };
     case "IN_REVIEW":
       return {
-        label: "Review Required",
-        color: "warning",
+        label: "In Review",
+        color: "error",
+        Icon: AlertCircle,
+      };
+    default:
+      return {
+        label: "Unknown",
+        color: "ghost",
         Icon: AlertCircle,
       };
   }
 };
 
 export default function ApplicantCard({ applicant }: { applicant: any }) {
+  const router = useRouter();
+
+  const handleStatusChange = async (
+    newStatus: "PENDING" | "IN_REVIEW" | "ACCEPTED" | "REJECTED"
+  ) => {
+    // Show loading toast
+    toast.loading("Updating applicant status...");
+
+    try {
+      const result = await updateApplicantStatus(applicant.id, newStatus);
+
+      if (result.success) {
+        toast.success(`Successfully ${newStatus.toLowerCase()} the applicant`);
+        router.refresh();
+      } else {
+        toast.error(result.error || "Failed to update status");
+      }
+    } catch (error) {
+      toast.error("Something went wrong while updating status");
+    }
+  };
+
   const {
     resumeData: { personalInformation, technicalSkills, workExperience },
   } = applicant;
@@ -93,9 +124,9 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
               </h3>
               {applicant.status && (
                 <div
-                  className={`badge gap-1.5 badge-${
+                  className={`badge badge-${
                     getAIStatusDetails(applicant.status)?.color
-                  }`}
+                  } gap-1.5`}
                 >
                   {React.createElement(
                     getAIStatusDetails(applicant.status)?.Icon,
@@ -154,40 +185,55 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
                   {applicant.status === "IN_REVIEW" && (
                     <>
                       <li>
-                        <a>
+                        <button
+                          onClick={() => handleStatusChange("ACCEPTED")}
+                          className="flex items-center gap-2"
+                        >
                           <CheckCircle2 className="w-4 h-4" />
-                          Accept Applicant
-                        </a>
+                          Accept
+                        </button>
                       </li>
                       <li>
-                        <a>
+                        <button
+                          onClick={() => handleStatusChange("REJECTED")}
+                          className="flex items-center gap-2"
+                        >
                           <XCircle className="w-4 h-4" />
-                          Reject Applicant
-                        </a>
+                          Reject
+                        </button>
                       </li>
                     </>
                   )}
-                  {applicant.status === "accepted" && (
+                  {applicant.status === "ACCEPTED" && (
                     <li>
-                      <a>
+                      <button
+                        onClick={() => handleStatusChange("REJECTED")}
+                        className="flex items-center gap-2"
+                      >
                         <XCircle className="w-4 h-4" />
-                        Reject Applicant
-                      </a>
+                        Reject
+                      </button>
                     </li>
                   )}
-                  {applicant.status === "rejected" && (
+                  {applicant.status === "REJECTED" && (
                     <>
                       <li>
-                        <a>
+                        <button
+                          onClick={() => handleStatusChange("IN_REVIEW")}
+                          className="flex items-center gap-2"
+                        >
                           <AlertCircle className="w-4 h-4" />
                           In Review
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a>
+                        <button
+                          onClick={() => handleStatusChange("ACCEPTED")}
+                          className="flex items-center gap-2"
+                        >
                           <CheckCircle2 className="w-4 h-4" />
-                          Accept Applicant
-                        </a>
+                          Accept
+                        </button>
                       </li>
                     </>
                   )}

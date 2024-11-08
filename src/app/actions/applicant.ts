@@ -119,3 +119,42 @@ export async function getAllApplicants() {
     return { success: false, error: "Failed to fetch applicants" };
   }
 }
+
+type ApplicantStatus = "PENDING" | "IN_REVIEW" | "ACCEPTED" | "REJECTED";
+
+export async function updateApplicantStatus(
+  applicantId: number,
+  status: ApplicantStatus
+) {
+  try {
+    const updatedApplicant = await prisma.applicant.update({
+      where: { id: applicantId },
+      data: {
+        status,
+        statusUpdatedAt: new Date(), // Update the timestamp when status changes
+      },
+    });
+
+    // Update the counts in JobApplication
+    await prisma.jobApplication.update({
+      where: { id: updatedApplicant.jobApplicationId },
+      data: {
+        acceptedCount: status === "ACCEPTED" ? { increment: 1 } : undefined,
+        rejectedCount: status === "REJECTED" ? { increment: 1 } : undefined,
+        inReviewCount: status === "IN_REVIEW" ? { increment: 1 } : undefined,
+      },
+    });
+
+    return {
+      success: true,
+      applicant: updatedApplicant,
+      message: `Application status updated to ${status}`,
+    };
+  } catch (error) {
+    console.error("Error updating applicant status:", error);
+    return {
+      success: false,
+      error: "Failed to update applicant status",
+    };
+  }
+}

@@ -108,10 +108,10 @@ export async function uploadResume(
   }
 }
 
-export async function getAllApplicants() {
+export async function getAllApplicants(status?: ApplicantStatus) {
   try {
     const applicants = await prisma.applicant.findMany({
-      where: { aiProcessed: true },
+      where: { aiProcessed: true, status },
     });
     return { success: true, applicants };
   } catch (error) {
@@ -127,11 +127,23 @@ export async function updateApplicantStatus(
   status: ApplicantStatus
 ) {
   try {
+    // First get the current applicant to know their previous status
+    const currentApplicant = await prisma.applicant.findUnique({
+      where: { id: applicantId },
+    });
+
+    if (!currentApplicant) {
+      return {
+        success: false,
+        error: "Applicant not found",
+      };
+    }
+
     const updatedApplicant = await prisma.applicant.update({
       where: { id: applicantId },
       data: {
         status,
-        statusUpdatedAt: new Date(), // Update the timestamp when status changes
+        statusUpdatedAt: new Date(),
       },
     });
 
@@ -139,9 +151,25 @@ export async function updateApplicantStatus(
     await prisma.jobApplication.update({
       where: { id: updatedApplicant.jobApplicationId },
       data: {
-        acceptedCount: status === "ACCEPTED" ? { increment: 1 } : undefined,
-        rejectedCount: status === "REJECTED" ? { increment: 1 } : undefined,
-        inReviewCount: status === "IN_REVIEW" ? { increment: 1 } : undefined,
+        // Increment new status count
+        acceptedCount:
+          status === "ACCEPTED"
+            ? { increment: 1 }
+            : currentApplicant.status === "ACCEPTED"
+            ? { decrement: 1 }
+            : undefined,
+        rejectedCount:
+          status === "REJECTED"
+            ? { increment: 1 }
+            : currentApplicant.status === "REJECTED"
+            ? { decrement: 1 }
+            : undefined,
+        inReviewCount:
+          status === "IN_REVIEW"
+            ? { increment: 1 }
+            : currentApplicant.status === "IN_REVIEW"
+            ? { decrement: 1 }
+            : undefined,
       },
     });
 

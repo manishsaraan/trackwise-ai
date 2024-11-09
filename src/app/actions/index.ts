@@ -83,7 +83,7 @@ export async function saveJobApplication(formData: FormData) {
   }
 }
 
-export async function getAllJobs() {
+export async function getAllJobs(status?: string) {
   try {
     const jobs = await prisma.jobApplication.findMany({
       include: {
@@ -95,6 +95,9 @@ export async function getAllJobs() {
       },
       orderBy: {
         createdAt: "desc",
+      },
+      where: {
+        status: status,
       },
     });
     return { success: true, jobs };

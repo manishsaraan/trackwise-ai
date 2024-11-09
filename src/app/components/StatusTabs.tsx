@@ -1,12 +1,13 @@
 "use client";
 
-import { Clock, XCircle, CheckCircle2 } from "lucide-react";
+import { Clock, XCircle, CheckCircle2, CheckCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const iconMap = {
   CheckCircle2: CheckCircle2,
   Clock: Clock,
   XCircle: XCircle,
+  CheckCircle: CheckCircle,
 };
 
 interface StatusTabsProps {

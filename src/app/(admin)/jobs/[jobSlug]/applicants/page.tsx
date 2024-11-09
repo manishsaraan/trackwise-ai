@@ -1,11 +1,9 @@
 import React from "react";
-import { Clock, XCircle, CheckCircle2 } from "lucide-react";
+import StatusTabsFactory from "@/factories/statusTabsFactory";
 import StatusTabs from "@/app/components/StatusTabs";
 import ApplicantCard from "./ApplicantCard";
 import { getAllApplicants } from "@/app/actions/applicant";
 import { getJobBySlug } from "@/app/actions";
-import { Suspense } from "react";
-import { redirect } from "next/navigation";
 
 export default async function ApplicantsPage({
   params,
@@ -16,46 +14,18 @@ export default async function ApplicantsPage({
 }) {
   const job = await getJobBySlug(params.jobSlug);
   const status = searchParams.status || "ACCEPTED";
-  console.log(status, "************status");
   const applicants = await getAllApplicants(status);
 
-  const statusTabs = [
-    {
-      id: "ACCEPTED",
-      label: "Accepted",
-      count: job?.acceptedCount,
-      iconName: "CheckCircle2",
-      color: "success",
-      description: "Accepted candidates",
-    },
-    {
-      id: "IN_REVIEW",
-      label: "In Review",
-      count: job?.inReviewCount,
-      iconName: "Clock",
-      color: "warning",
-      description: "Applications under review",
-    },
-    {
-      id: "REJECTED",
-      label: "Rejected",
-      count: job?.rejectedCount,
-      iconName: "XCircle",
-      color: "error",
-      description: "Rejected applications",
-    },
-  ];
+  const statusTabs = StatusTabsFactory.createStatusTabs("applicants", {
+    ACCEPTED: job?.acceptedCount,
+    IN_REVIEW: job?.inReviewCount,
+    REJECTED: job?.rejectedCount,
+  });
 
-  const onSelectTab = (tabId: string) => {
-    console.log(tabId);
-  };
-
-  console.log(applicants, "************applicants");
   const { success, applicants: applicantsData } = applicants;
   return (
     <>
       <div className="min-h-screen bg-base-100">
-        {/* Header Section */}
         <div className="border-b border-base-200">
           <div className="max-w-7xl mx-auto p-6">
             <div className="flex justify-between items-center">
@@ -67,9 +37,7 @@ export default async function ApplicantsPage({
               </div>
             </div>
 
-            <Suspense>
-              <StatusTabs statusTabs={statusTabs} defaultTab={status} />
-            </Suspense>
+            <StatusTabs statusTabs={statusTabs} defaultTab={status} />
           </div>
         </div>
 

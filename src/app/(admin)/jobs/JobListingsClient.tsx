@@ -122,7 +122,7 @@ export default function JobListingsClient({
                   </div>
                 </div>
 
-                <JobActions jobSlug={job.id.toString()} />
+                <JobActions jobSlug={job.id.toString()} status={job.status} />
               </div>
             </div>
           </div>

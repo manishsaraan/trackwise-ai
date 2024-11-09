@@ -150,3 +150,33 @@ export async function getJobBySlug(slug: string) {
     throw new Error("Failed to fetch job details");
   }
 }
+
+export async function updateJobStatus(
+  jobId: number,
+  status: "ACTIVE" | "CLOSED"
+) {
+  try {
+    const updatedJob = await prisma.jobApplication.update({
+      where: { id: jobId },
+      data: {
+        status,
+      },
+    });
+
+    return {
+      success: true,
+      job: updatedJob,
+      message: `Job ${
+        status === "CLOSED" ? "closed" : "reopened"
+      } successfully`,
+    };
+  } catch (error) {
+    console.error(`Error ${status.toLowerCase()}ing job:`, error);
+    return {
+      success: false,
+      error: `Failed to ${status.toLowerCase()} job`,
+      message:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}

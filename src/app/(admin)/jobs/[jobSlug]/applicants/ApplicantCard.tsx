@@ -75,20 +75,32 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
   const handleStatusChange = async (
     newStatus: "PENDING" | "IN_REVIEW" | "ACCEPTED" | "REJECTED"
   ) => {
-    // Show loading toast
-    toast.loading("Updating applicant status...");
-
     try {
       const result = await updateApplicantStatus(applicant.id, newStatus);
 
       if (result.success) {
-        toast.success(`Successfully ${newStatus.toLowerCase()} the applicant`);
+        toast.success(`Status updated to ${newStatus.toLowerCase()}`, {
+          description: `Applicant ${applicant.firstName} ${
+            applicant.lastName
+          } has been ${newStatus.toLowerCase()}.`,
+          position: "top-right",
+          icon: "✅",
+        });
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to update status");
+        toast.error("Failed to update status", {
+          description: result.error || "Please try again later.",
+          position: "top-right",
+          icon: "❌",
+        });
       }
     } catch (error) {
-      toast.error("Something went wrong while updating status");
+      toast.error("Something went wrong", {
+        description:
+          "Failed to update applicant status. Please try again later.",
+        position: "top-right",
+        icon: "❌",
+      });
     }
   };
 

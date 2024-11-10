@@ -7,17 +7,25 @@ import {
   FormData,
   workModeEnum,
 } from "@/lib/validations/job-form";
+import { stackServerApp } from "@/stack";
 
 export async function saveJobApplication(formData: FormData) {
   try {
-    // Validate the input data
+    const user = await stackServerApp.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: "Authentication required",
+        message: "You must be logged in to create a job",
+      };
+    }
+
     const validatedData = jobFormSchema.parse(formData);
-    console.log("validatedData", validatedData);
-    // Create the job application with questions in a transaction
+
     const savedJob = await prisma.$transaction(async (tx) => {
-      // First, create the job application
       const workMode = workModeEnum[validatedData.workMode];
-      console.log("workMode", workMode);
+
       const job = await tx.jobApplication.create({
         data: {
           jobTitle: validatedData.jobTitle,
@@ -31,6 +39,7 @@ export async function saveJobApplication(formData: FormData) {
           dontPreferSalary: validatedData.dontPreferMin,
           salaryMin: validatedData.salaryMin,
           salaryMax: validatedData.salaryMax,
+          userId: user.id, // Using Stack user ID
         },
       });
 

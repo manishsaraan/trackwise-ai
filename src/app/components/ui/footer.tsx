@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="flex flex-col sm:flex-row gap-8 justify-between p-2 bg-base-200">
+    <footer className="flex flex-col sm:flex-row gap-8 justify-between p-2">
       <aside>
         <small>TrackWiseAI Copyright © 2024 - All rights reserved</small>
       </aside>

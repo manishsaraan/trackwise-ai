@@ -20,7 +20,7 @@ export default async function RootLayout({
   const user = await stackServerApp.getUser({ or: "redirect" });
   await ensureOnboarded();
   return (
-    <div className="grid grid-cols-[280px_1fr]">
+    <div className="grid grid-cols-[220px_1fr]">
       {/* Sidebar */}
       <Sidebar />
 

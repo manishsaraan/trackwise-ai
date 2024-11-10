@@ -1,7 +1,8 @@
 import { getAllJobs } from "@/app/actions";
-import JobListingsClient from "./JobListingsClient";
 import { Plus } from "lucide-react";
+import { stackServerApp } from "@/stack";
 import Link from "next/link";
+import JobListingsClient from "./JobListingsClient";
 import StatusTabsFactory from "@/factories/statusTabsFactory";
 import StatusTabs from "@/app/components/StatusTabs";
 
@@ -10,7 +11,9 @@ async function JobListingsDashboard({
 }: {
   searchParams: { status?: string };
 }) {
+  const user = await stackServerApp.getUser({ or: "redirect" });
   const jobs = await getAllJobs(status);
+
   const { jobs: jobsData, success } = jobs;
 
   const statusTabs = StatusTabsFactory.createStatusTabs("jobs", {

@@ -1,5 +1,5 @@
-import JobForm from "@/components/JobForm";
+import CustomOAuthSignIn from "@/app/components/ui/GoogleSignIn";
 
 export default function Home() {
-  return <JobForm />;
+  return <CustomOAuthSignIn />;
 }

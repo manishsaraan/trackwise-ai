@@ -35,6 +35,10 @@ model JobApplication {
   status           JobStatus     @default(ACTIVE)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  user             User          @relation(fields: [userId], references: [id])
+  userId           String
+
+  @@index([userId])
 }
 
 enum WorkMode {
@@ -105,4 +109,17 @@ model QuestionAnswer {
 
   @@index([questionId])
   @@index([applicantId])
+}
+
+model User {
+  id                   String           @id @default(uuid())
+  displayName          String
+  primaryEmail         String           @unique
+  primaryEmailVerified Boolean          @default(false)
+  profileImageUrl      String?          @db.Text
+  signedUpAt           DateTime         @default(now())
+  oauthProviders       Json[] // Will store array of provider objects
+  jobs                 JobApplication[] // Add this relation
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 }

@@ -11,7 +11,6 @@ async function JobListingsDashboard({
 }: {
   searchParams: { status?: string };
 }) {
-  const user = await stackServerApp.getUser({ or: "redirect" });
   const jobs = await getAllJobs(status);
 
   const { jobs: jobsData, success } = jobs;

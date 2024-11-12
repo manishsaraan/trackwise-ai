@@ -2,13 +2,22 @@ import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "../stack";
 import { Toaster } from "sonner";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import Sidebar from "./components/ui/sidebar";
-import Navigation from "./components/navigation";
-import Footer from "./components/ui/footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const cabinetGrotesk = localFont({
+  src: "../assets/fonts/CabinetGrotesk_Complete/Variable/CabinetGrotesk-Variable.ttf",
+  variable: "--font-cabinet",
+});
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+});
 
 export const metadata: Metadata = {
   title: "ATS App",

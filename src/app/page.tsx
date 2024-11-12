@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   Brain,
   Users,
@@ -8,31 +9,48 @@ import {
   Zap,
   CheckCircle,
   ArrowRight,
+  Github,
 } from "lucide-react";
-import { OAuthButton } from "@stackframe/stack";
 import GoogleSignIn from "./components/ui/GoogleSignIn";
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-base-100">
+      {/* GitHub Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <Link
+          href="https://github.com/yourusername/yourrepo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-ghost gap-2 bg-base-200 hover:bg-base-300"
+        >
+          <Github className="w-5 h-5" />
+          View on GitHub
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <section className="hero min-h-[80vh] bg-gradient-to-b from-primary/5 to-base-100">
         <div className="hero-content text-center">
-          <div className="max-w-3xl">
-            <h1 className="text-5xl font-bold mb-8 leading-tight">
+          <div className="max-w-4xl">
+            <h1 className="font-heading text-8xl font-bold mb-6 leading-tight">
               AI-Powered Hiring,{" "}
-              <span className="text-primary">Simplified</span>
+              <span className="text-primary bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                Simplified
+              </span>
             </h1>
-            <p className="text-xl text-base-content/70 mb-12 leading-relaxed">
+
+            <p className="font-body text-xl text-base-content/70 mb-12 leading-relaxed max-w-2xl mx-auto">
               Transform your recruitment process with intelligent candidate
               screening, automated assessments, and real-time insights. Find the
               perfect talent faster than ever.
             </p>
-            <div className="flex flex-col items-center justify-center">
-              <GoogleSignIn />
-              <div className="mt-4 flex items-center justify-center gap-8 text-base-content/60">
-                <span className="flex items-center gap-2">
-                  No Credit Card Required
-                </span>
+
+            <div className="space-y-6">
+              <div className="flex flex-col items-center gap-4">
+                <GoogleSignIn />
+                <p className="text-base-content/60 text-sm flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" /> No credit card required
+                </p>
               </div>
             </div>
           </div>

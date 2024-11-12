@@ -39,7 +39,6 @@ export async function saveJobApplication(formData: FormData) {
           dontPreferSalary: validatedData.dontPreferMin,
           salaryMin: validatedData.salaryMin,
           salaryMax: validatedData.salaryMax,
-          userId: user.id, // Using Stack user ID
         },
       });
 

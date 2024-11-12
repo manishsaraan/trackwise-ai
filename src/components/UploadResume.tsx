@@ -1,17 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { uploadResume } from "@/app/actions/applicant";
-import { CheckCircle2, Loader2 } from "lucide-react"; // Import icons
 
 interface UploadResumeProps {
   onUploadSuccess: (url: string) => void;
   onUploadError: (error: string) => void;
+  title: string;
+  allowedFileTypes: string[];
+  maxSizeInMB: number;
+  acceptedFileTypes: string;
+  uploadText?: string;
+  dragDropText?: string;
+  sizeText?: string;
+  error?: string;
 }
 
 export default function UploadResume({
   onUploadSuccess,
   onUploadError,
+  title,
+  allowedFileTypes,
+  maxSizeInMB,
+  acceptedFileTypes,
+  uploadText = "Upload a file",
+  dragDropText = "or drag and drop",
+  sizeText,
+  error,
 }: UploadResumeProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -24,17 +40,16 @@ export default function UploadResume({
     if (!file) return;
 
     // Validate file type and size
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      onUploadError("Only PDF, DOC, and DOCX files are allowed");
+    if (!allowedFileTypes.includes(file.type)) {
+      onUploadError(
+        `Only ${acceptedFileTypes
+          .replace(/\./g, "")
+          .toUpperCase()} files are allowed`
+      );
       return;
     }
-    if (file.size > 5000000) {
-      onUploadError("Resume must be 5MB or less");
+    if (file.size > maxSizeInMB * 1024 * 1024) {
+      onUploadError(`File must be ${maxSizeInMB}MB or less`);
       return;
     }
 
@@ -47,11 +62,12 @@ export default function UploadResume({
       formData.append("file", file);
 
       const result = await uploadResume(formData);
-      if (result.success) {
-        onUploadSuccess(result.url as string);
+
+      if (result.success && result.url) {
+        onUploadSuccess(result.url);
         setUploadSuccess(true);
       } else {
-        onUploadError(result.error || "Failed to upload resume");
+        onUploadError(result.error || "Failed to upload file");
         setFileName("");
       }
     } catch (error) {
@@ -64,10 +80,11 @@ export default function UploadResume({
 
   return (
     <div className="form-control">
-      <label className="label">
-        <span className="label-text">Resume</span>
-      </label>
-      <div className="border-2 border-dashed border-base-300 rounded-lg p-6">
+      <div
+        className={`border-2 border-dashed rounded-lg p-6 ${
+          error ? "border-error" : "border-base-300"
+        }`}
+      >
         <div className="text-center">
           {!isUploading && !uploadSuccess && (
             <>
@@ -87,19 +104,22 @@ export default function UploadResume({
               </svg>
               <div className="mt-2">
                 <label className="cursor-pointer">
-                  <span className="link link-primary">Upload a file</span>
+                  <span className="link link-primary">{uploadText}</span>
                   <input
                     type="file"
                     className="hidden"
-                    accept=".pdf,.doc,.docx"
+                    accept={acceptedFileTypes}
                     onChange={handleFileChange}
                     disabled={isUploading}
                   />
                 </label>
-                <span className="text-base-content/70"> or drag and drop</span>
+                <span className="text-base-content/70"> {dragDropText}</span>
               </div>
               <p className="text-xs text-base-content/50 mt-1">
-                PDF, DOC up to 10MB
+                {sizeText ||
+                  `${acceptedFileTypes
+                    .replace(/\./g, "")
+                    .toUpperCase()} up to ${maxSizeInMB}MB`}
               </p>
             </>
           )}
@@ -130,6 +150,11 @@ export default function UploadResume({
           )}
         </div>
       </div>
+      {error && (
+        <label className="label">
+          <span className="label-text-alt text-error">{error}</span>
+        </label>
+      )}
     </div>
   );
 }

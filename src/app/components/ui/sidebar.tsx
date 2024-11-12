@@ -19,7 +19,7 @@ export default function Sidebar() {
           <Link
             href="/jobs/create"
             className={`flex items-center gap-2 px-3 ${
-              pathname === "/jobs/create" ? "active" : ""
+              pathname === "/jobs/create" ? "active rounded-none" : ""
             }`}
           >
             <Plus className="w-4 h-4" />
@@ -37,7 +37,7 @@ export default function Sidebar() {
           <Link
             href="/jobs"
             className={`flex items-center gap-2 px-3 ${
-              pathname === "/jobs" ? "active" : ""
+              pathname === "/jobs" ? "active rounded-none" : ""
             }`}
           >
             <Briefcase className="w-4 h-4" />

@@ -299,65 +299,108 @@ const CompanyOnboarding = () => {
   return (
     <div className="min-h-screen bg-base-200">
       <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold mb-2">
+        {/* Combined Header and Progress */}
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold mb-2">
             Setup Your Company Profile
           </h1>
-          <p className="text-base-content/70">
+          <p className="text-base-content/70 text-sm mb-6">
             Help us customize your experience and showcase your company to
             potential candidates
           </p>
-        </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm text-base-content/70">Profile Setup</span>
-            <span className="text-sm font-medium">{currentStep}/3</span>
-          </div>
-          <div className="w-full bg-base-300 rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(currentStep / 3) * 100}%` }}
-            ></div>
-          </div>
-        </div>
+          {/* Combined Steps and Progress */}
+          <div className="flex items-center gap-2 relative">
+            {steps.map((step, index) => (
+              <React.Fragment key={step.number}>
+                {/* Step Circle */}
+                <div
+                  className={`relative z-10 flex flex-col items-center ${
+                    index !== steps.length - 1 ? "flex-1" : ""
+                  }`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
+                      ${
+                        currentStep > step.number
+                          ? "bg-success/20"
+                          : currentStep === step.number
+                          ? "bg-gradient-to-r from-primary to-secondary ring-4 ring-primary/20"
+                          : "bg-base-200 text-base-content/40"
+                      }`}
+                  >
+                    {currentStep > step.number ? (
+                      <CheckCircle className="w-5 h-5 text-success animate-fadeIn" />
+                    ) : (
+                      <span className="text-sm font-medium">
+                        {currentStep === step.number ? (
+                          <span className="text-primary-content">
+                            {step.number}
+                          </span>
+                        ) : (
+                          step.number
+                        )}
+                      </span>
+                    )}
+                  </div>
 
-        {/* Steps Indicator */}
-        <div className="flex justify-between mb-8">
-          {steps.map((step) => (
-            <div
-              key={step.number}
-              className={`flex items-center gap-2 ${
-                currentStep >= step.number
-                  ? "text-primary"
-                  : "text-base-content/40"
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  currentStep >= step.number
-                    ? "bg-primary text-primary-content"
-                    : "bg-base-300"
-                }`}
-              >
-                {currentStep > step.number ? (
-                  <CheckCircle className="w-5 h-5" />
-                ) : (
-                  step.number
+                  {/* Step Title */}
+                  <div className="mt-2 text-center">
+                    <p
+                      className={`text-xs font-medium transition-colors duration-300 ${
+                        currentStep > step.number
+                          ? "text-success"
+                          : currentStep === step.number
+                          ? "text-primary"
+                          : "text-base-content/40"
+                      }`}
+                    >
+                      {step.title}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Progress Line */}
+                {index !== steps.length - 1 && (
+                  <div className="flex-1 h-[3px] bg-base-200 rounded-full relative">
+                    <div
+                      className={`absolute inset-0 rounded-full transition-all duration-500 ease-out
+                        ${
+                          currentStep > step.number
+                            ? "bg-success/60"
+                            : "bg-gradient-to-r from-primary to-secondary"
+                        }
+                        ${
+                          currentStep > step.number
+                            ? "opacity-100"
+                            : "opacity-40"
+                        }
+                      `}
+                      style={{
+                        width:
+                          currentStep > step.number
+                            ? "100%"
+                            : currentStep === step.number
+                            ? "50%"
+                            : "0%",
+                        filter: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.1))",
+                      }}
+                    />
+                  </div>
                 )}
-              </div>
-            </div>
-          ))}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
-        {/* Step Content */}
+        {/* Form Card - Updated to be more compact */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="card bg-base-100 shadow-xl"
         >
-          <div className="card-body p-8">
+          <div className="card-body p-6">
+            {" "}
+            {/* Reduced padding */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold flex items-center gap-2">
@@ -457,7 +500,6 @@ const CompanyOnboarding = () => {
                 </div>
               </div>
             )}
-
             {currentStep === 2 && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold flex items-center gap-2">
@@ -510,7 +552,6 @@ const CompanyOnboarding = () => {
                 </div>
               </div>
             )}
-
             {currentStep === 3 && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold flex items-center gap-2">
@@ -529,7 +570,7 @@ const CompanyOnboarding = () => {
                     onUploadError={(error) => toast.error(error)}
                     allowedFileTypes={["image/jpeg", "image/png", "image/gif"]}
                     acceptedFileTypes=".jpg,.jpeg,.png,.gif"
-                    maxSizeInMB={2}
+                    maxSizeInMB={10}
                     sizeText="JPG, PNG, GIF up to 2MB"
                     error={errors.logo?.message}
                   />
@@ -590,7 +631,6 @@ const CompanyOnboarding = () => {
                 </div>
               </div>
             )}
-
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-8 pt-4 border-t border-base-200">
               <button

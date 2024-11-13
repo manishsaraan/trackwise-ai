@@ -11,23 +11,10 @@ import {
   ArrowRight,
   Github,
 } from "lucide-react";
-import GoogleSignIn from "./components/ui/GoogleSignIn";
+import GoogleSignIn from "@/app/components/ui/GoogleSignIn";
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-base-100">
-      {/* GitHub Button */}
-      <div className="fixed top-4 right-4 z-50">
-        <Link
-          href="https://github.com/yourusername/yourrepo"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-ghost gap-2 bg-base-200 hover:bg-base-300"
-        >
-          <Github className="w-5 h-5" />
-          View on GitHub
-        </Link>
-      </div>
-
       {/* Hero Section */}
       <section className="hero min-h-[80vh] bg-gradient-to-b from-primary/5 to-base-100">
         <div className="hero-content text-center">

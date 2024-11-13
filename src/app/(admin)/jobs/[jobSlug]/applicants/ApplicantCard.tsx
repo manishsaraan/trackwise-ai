@@ -20,6 +20,7 @@ import ContactInfo from "./ContactInfo";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { updateApplicantStatus } from "@/app/actions/applicant";
+import { statusConfig } from "@/utils/theme";
 
 interface Applicant {
   id: number;
@@ -71,6 +72,7 @@ const getAIStatusDetails = (status: Applicant["status"]) => {
 
 export default function ApplicantCard({ applicant }: { applicant: any }) {
   const router = useRouter();
+  const status = statusConfig[applicant.status as keyof typeof statusConfig];
 
   const handleStatusChange = async (
     newStatus: "PENDING" | "IN_REVIEW" | "ACCEPTED" | "REJECTED"
@@ -123,53 +125,53 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
   };
 
   return (
-    <div
-      key={applicant.id}
-      className="card bg-base-100 border border-base-200 hover:border-base-300 transition-colors"
-    >
+    <div className="card bg-base-100 border border-base-400/80 hover:border-base-500/90 transition-colors">
       <div className="card-body">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-lg font-medium">
+              <h3 className="text-lg font-heading text-text-primary font-medium">
                 {applicant.firstName} {applicant.lastName}
               </h3>
               {applicant.status && (
                 <div
-                  className={`badge badge-${
-                    getAIStatusDetails(applicant.status)?.color
-                  } gap-1.5`}
+                  className={`badge gap-1.5 ${status.bgColor} ${status.borderColor}`}
                 >
                   {React.createElement(
                     getAIStatusDetails(applicant.status)?.Icon,
                     {
-                      className: "w-3 h-3",
+                      className: `w-3 h-3 ${status.textColor}`,
                     }
                   )}
-                  <span className="text-xs">
+                  <span className={`text-xs ${status.textColor}`}>
                     {getAIStatusDetails(applicant.status)?.label}
                   </span>
                 </div>
               )}
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-base-content/70">
+            <div className="flex flex-wrap gap-4 text-sm text-text-body">
               <span className="flex items-center gap-1">
                 <Briefcase className="w-4 h-4" />
                 {getCurrentPosition(workExperience)}
               </span>
             </div>
             <div className="mt-4">
-              <h4 className="text-sm font-medium mb-2">Key Skills</h4>
+              <h4 className="text-sm font-medium text-text-primary mb-2">
+                Key Skills
+              </h4>
               <div className="flex flex-wrap gap-1">
                 {technicalSkills
                   .slice(0, 5)
                   .map((skill: string, index: number) => (
-                    <span key={index} className="badge badge-ghost badge-sm">
+                    <span
+                      key={index}
+                      className="badge border-base-400/80 badge-ghost badge-sm text-text-secondary"
+                    >
                       {skill}
                     </span>
                   ))}
                 {technicalSkills.length > 5 && (
-                  <span className="badge badge-ghost badge-sm">
+                  <span className="badge badge-ghost badge-sm text-text-muted">
                     +{technicalSkills.length - 5} more
                   </span>
                 )}
@@ -178,87 +180,25 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
           </div>
 
           <div className="flex flex-col items-end gap-4">
-            <div className="flex items-center gap-2">
-              <ExternalLinks
-                applicant={applicant}
-                linkedinUrl={personalInformation.linkedin_profile}
-                websiteUrl={personalInformation.portfolio_website}
-                resumeUrl={applicant.resumeUrl}
-              />
-
-              <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-ghost btn-sm">
-                  <MoreHorizontal className="w-4 h-4" />
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-52"
-                >
-                  {applicant.status === "IN_REVIEW" && (
-                    <>
-                      <li>
-                        <button
-                          onClick={() => handleStatusChange("ACCEPTED")}
-                          className="flex items-center gap-2"
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                          Accept
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => handleStatusChange("REJECTED")}
-                          className="flex items-center gap-2"
-                        >
-                          <XCircle className="w-4 h-4" />
-                          Reject
-                        </button>
-                      </li>
-                    </>
-                  )}
-                  {applicant.status === "ACCEPTED" && (
-                    <li>
-                      <button
-                        onClick={() => handleStatusChange("REJECTED")}
-                        className="flex items-center gap-2"
-                      >
-                        <XCircle className="w-4 h-4" />
-                        Reject
-                      </button>
-                    </li>
-                  )}
-                  {applicant.status === "REJECTED" && (
-                    <>
-                      <li>
-                        <button
-                          onClick={() => handleStatusChange("IN_REVIEW")}
-                          className="flex items-center gap-2"
-                        >
-                          <AlertCircle className="w-4 h-4" />
-                          In Review
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => handleStatusChange("ACCEPTED")}
-                          className="flex items-center gap-2"
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                          Accept
-                        </button>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </div>
-            </div>
+            <ExternalLinks
+              applicant={applicant}
+              linkedinUrl={personalInformation.linkedin_profile}
+              websiteUrl={personalInformation.portfolio_website}
+              resumeUrl={applicant.resumeUrl}
+            />
 
             <div className="flex flex-col gap-2">
-              <ContactInfo icon={Mail} value={applicant.email} label="Email" />
+              <ContactInfo
+                icon={Mail}
+                value={applicant.email}
+                label="Email"
+                className="text-text-secondary"
+              />
               <ContactInfo
                 icon={Phone}
                 value={personalInformation.phone_number}
                 label="Phone"
+                className="text-text-secondary"
               />
             </div>
           </div>
@@ -266,43 +206,23 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 
         <div className="mt-4 border-t border-base-200 pt-4">
           <div
-            className={`rounded-lg p-4 ${
-              applicant.aiStatus === "passed"
-                ? "bg-success/5 border border-success/20"
-                : applicant.aiStatus === "review_required"
-                ? "bg-warning/5 border border-warning/20"
-                : "bg-error/5 border border-error/20"
-            }`}
+            className={`rounded-lg p-4 ${status.bgColor} ${status.borderColor}`}
           >
             <div className="flex items-start gap-3">
-              <div
-                className={`p-2 rounded-lg ${
-                  applicant.aiStatus === "passed"
-                    ? "bg-success/10"
-                    : applicant.aiStatus === "review_required"
-                    ? "bg-warning/10"
-                    : "bg-error/10"
-                }`}
-              >
-                <Brain
-                  className={`w-5 h-5 ${
-                    applicant.aiStatus === "passed"
-                      ? "text-success"
-                      : applicant.aiStatus === "review_required"
-                      ? "text-warning"
-                      : "text-error"
-                  }`}
-                />
+              <div className={`p-2 rounded-lg ${status.bgColor}`}>
+                <Brain className={`w-5 h-5 ${status.textColor}`} />
               </div>
 
               <div className="space-y-2 flex-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-medium">AI Assessment</h4>
+                    <h4 className="font-medium text-text-primary">
+                      AI Assessment
+                    </h4>
                   </div>
                 </div>
 
-                <div className="text-sm text-base-content/70">
+                <div className="text-sm text-text-body">
                   {applicant.explanation}
                 </div>
               </div>

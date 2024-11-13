@@ -1,17 +1,18 @@
 "use client";
-
 import { UserButton } from "@stackframe/stack";
+import Link from "next/link";
 
-export default function Navigation() {
+export default function TopNavBar() {
   return (
-    <div className="navbar bg-base-300/20 border-t border-base-300 py-3 px-10">
-      <div className="flex-1"></div>
-
-      <div className="navbar-end">
+    <header className="w-full bg-base-100 shadow-md">
+      <div className="  mx-auto  flex items-center justify-between py-4 px-6">
+        <Link href="/" className="text-2xl font-bold">
+          TrackWiseAI
+        </Link>
         <div className="dropdown dropdown-end">
           <UserButton showUserInfo={true} />
         </div>
       </div>
-    </div>
+    </header>
   );
 }

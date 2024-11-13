@@ -29,7 +29,7 @@ export async function saveJobApplication(formData: FormData) {
       const job = await tx.jobApplication.create({
         data: {
           jobTitle: validatedData.jobTitle,
-          company: "Test",
+          companyId: 4,
           location: validatedData.location,
           jobDescription: validatedData.jobDescription,
           position: validatedData.position,

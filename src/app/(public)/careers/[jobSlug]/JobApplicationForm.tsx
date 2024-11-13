@@ -227,16 +227,15 @@ export function JobApplicationForm({
 
           <div className="form-control">
             <UploadResume
+              title="Resume"
               onUploadSuccess={handleUploadSuccess}
               onUploadError={handleUploadError}
+              allowedFileTypes={["application/pdf"]}
+              acceptedFileTypes=".pdf"
+              maxSizeInMB={10}
+              sizeText="PDF up to 10MB"
+              error={errors.resume?.message}
             />
-            {errors.resume && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {errors.resume.message}
-                </span>
-              </label>
-            )}
           </div>
 
           {questions.slice(0, 5).map((question, index) => (

@@ -10,10 +10,7 @@ const cabinetGrotesk = localFont({
   src: "../assets/fonts/CabinetGrotesk_Complete/Variable/CabinetGrotesk-Variable.ttf",
   variable: "--font-cabinet",
 });
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
@@ -31,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html data-theme="cmyk" lang="en">
-      <body className={inter.className}>
+      <body
+        className={`${cabinetGrotesk.variable} ${plusJakartaSans.variable}`}
+      >
         <StackProvider app={stackServerApp}>
           <StackTheme>
             <Toaster />

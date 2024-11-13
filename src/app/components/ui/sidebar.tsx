@@ -7,71 +7,44 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col items-center h-screen sticky top-0 overflow-y-auto space-y-4 w-56 py-6 bg-base-200">
-      <div className="w-full px-3">
-        <Link href="/" className="text-lg font-semibold">
-          TrackWiseAI
-        </Link>
-      </div>
-
-      <ul className="menu menu-lg w-full px-0 text-sm [&_.active]:bg-black/10">
-        <li>
-          <Link
-            href="/jobs/create"
-            className={`flex items-center gap-2 px-3 ${
-              pathname === "/jobs/create" ? "active rounded-none" : ""
-            }`}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Post New Job</span>
-            <kbd
-              className={`kbd kbd-sm ml-auto text-base-content opacity-60 ${
-                pathname === "/jobs/create" ? "bg-white" : "bg-base-200"
+    <aside className="flex flex-col items-start h-screen sticky top-0 overflow-y-auto space-y-6 py-4 w-64 bg-base-200">
+      <nav className="w-full">
+        <ul className="menu menu-lg w-full px-0 text-base [&_.active]:bg-primary [&_.active]:text-primary-content rounded-none">
+          <li>
+            <Link
+              href="/jobs/create"
+              className={`flex items-center gap-3 px-6 py-3 rounded-none ${
+                pathname === "/jobs/create" ? "active" : ""
               }`}
             >
-              ⌘N
-            </kbd>
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/jobs"
-            className={`flex items-center gap-2 px-3 ${
-              pathname === "/jobs" ? "active rounded-none" : ""
-            }`}
-          >
-            <Briefcase className="w-4 h-4" />
-            <span>My Jobs</span>
-            <kbd
-              className={`kbd kbd-sm ml-auto text-base-content opacity-60 ${
-                pathname === "/jobs" ? "bg-white" : "bg-base-200"
+              <Plus className="w-5 h-5" />
+              <span>Post New Job</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/jobs"
+              className={`flex items-center gap-3 px-6 py-3 rounded-none ${
+                pathname === "/jobs" ? "active" : ""
               }`}
             >
-              ⌘J
-            </kbd>
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/handler/account-settings"
-            className={`flex items-center gap-2 px-3 ${
-              pathname === "/handler/account-settings" ? "active" : ""
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>Settings</span>
-            <kbd
-              className={`kbd kbd-sm ml-auto text-base-content opacity-60 ${
-                pathname === "/handler/account-settings"
-                  ? "bg-white"
-                  : "bg-base-200"
+              <Briefcase className="w-5 h-5" />
+              <span>My Jobs</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/handler/account-settings"
+              className={`flex items-center gap-3 px-6 py-3 rounded-none ${
+                pathname === "/handler/account-settings" ? "active" : ""
               }`}
             >
-              ⌘,
-            </kbd>
-          </Link>
-        </li>
-      </ul>
+              <Settings className="w-5 h-5" />
+              <span>Settings</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </aside>
   );
 }

@@ -3,6 +3,7 @@
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { put } from "@vercel/blob";
+import { queueResumeProcessing } from "@/lib/upstash/queue";
 
 // Update the schema for the applicant data
 const applicantSchema = z.object({
@@ -71,6 +72,9 @@ export async function saveApplicantData(data: ApplicantData) {
 
       return applicant;
     });
+
+    // Queue the resume processing
+    await queueResumeProcessing(result.id.toString());
 
     return {
       success: true,

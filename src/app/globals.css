@@ -4,22 +4,22 @@
 
 /* custom css */
 .group:focus-within .group-hover\:opacity-100 {
-  opacity: 0 !important;
+	opacity: 0 !important;
 }
 
 .card {
-  transition: all 0.2s ease;
+	transition: all 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+	transform: translateY(-2px);
 }
 
 .badge {
-  font-weight: 500;
+	font-weight: 500;
 }
 
 .avatar.placeholder > div {
-  background: theme("colors.primary");
-  color: theme("colors.primary-content");
+	background: theme('colors.primary');
+	color: theme('colors.primary-content');
 }

@@ -1,25 +1,24 @@
 "use client";
 import React from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-  Brain,
-  Users,
-  Clock,
-  Search,
-  LineChart,
-  Zap,
-  CheckCircle,
-  ArrowRight,
-  Github,
-  Star,
-  GitFork,
-  Code2,
-} from "lucide-react";
-import GoogleSignIn from "@/app/components/ui/GoogleSignIn";
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 
+import GoogleSignIn from '@/app/components/ui/GoogleSignIn';
+import {
+	Brain,
+	CheckCircle,
+	Clock,
+	Code2,
+	Github,
+	LineChart,
+	Search,
+	Star,
+	Users,
+	Zap,
+} from 'lucide-react';
+  
 const LandingPage = () => {
-  const heroContentVariants = {
+	const heroContentVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,

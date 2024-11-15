@@ -1,0 +1,24 @@
+{
+	"semi": true,
+	"trailingComma": "es5",
+	"bracketSpacing": true,
+	"printWidth": 120,
+	"useTabs": true,
+	"plugins": ["@trivago/prettier-plugin-sort-imports"],
+	"importOrder": [
+		"^(next/(.*)$)|^(next$)",
+		"^(react/(.*)$)|^(react$)",
+		"<THIRD_PARTY_MODULES>",
+		"^components/(.*)$|^components/(.*)$",
+		"^lib/(.*)$",
+		"^utils/(.*)$",
+		"^constants/(.*)$",
+		"^data/(.*)$",
+		"^styles/(.*)$",
+		"^[./]",
+		"^nprogress/nprogress.css$"
+	],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true,
+	"importOrderGroupNamespaceSpecifiers": true
+}

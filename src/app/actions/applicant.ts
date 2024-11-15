@@ -1,28 +1,28 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import prisma from "@/lib/prisma";
-import { put } from "@vercel/blob";
-import { queueResumeProcessing } from "@/lib/upstash/queue";
+import { z } from 'zod';
+import prisma from '@/lib/prisma';
+import { put } from '@vercel/blob';
+import { queueResumeProcessing } from '@/lib/upstash/queue';
 
 // Update the schema for the applicant data
 const applicantSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone number is required"),
-  resumeUrl: z.string().url("Invalid resume URL"),
-  currentSalary: z.number().min(0, "Salary cannot be negative"),
-  receiveNotifications: z.boolean(),
-  jobApplicationId: z.number().int().positive("Invalid job application ID"),
-  answers: z.array(z.string().min(50, "Answer must be at least 50 characters")),
+	firstName: z.string().min(1, 'First name is required'),
+	lastName: z.string().min(1, 'Last name is required'),
+	email: z.string().email('Invalid email address'),
+	phone: z.string().min(1, 'Phone number is required'),
+	resumeUrl: z.string().url('Invalid resume URL'),
+	currentSalary: z.number().min(0, 'Salary cannot be negative'),
+	receiveNotifications: z.boolean(),
+	jobApplicationId: z.number().int().positive('Invalid job application ID'),
+	answers: z.array(z.string().min(50, 'Answer must be at least 50 characters')),
 });
 
 type ApplicantData = z.infer<typeof applicantSchema>;
 
 export async function saveApplicantData(data: ApplicantData) {
-  try {
-    // Validate the input data
+	try {
+		// Validate the input data
     const validatedData = applicantSchema.parse(data);
 
     // Get the job questions to map with answers
@@ -90,103 +90,98 @@ export async function saveApplicantData(data: ApplicantData) {
   }
 }
 
-export async function uploadResume(
-  formData: FormData
-): Promise<{ success: boolean; url?: string; error?: string }> {
-  try {
-    const file = formData.get("file") as File;
-    if (!file) {
-      throw new Error("No file provided");
-    }
+export async function uploadResume(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
+	try {
+		const file = formData.get('file') as File;
+		if (!file) {
+			throw new Error('No file provided');
+		}
 
-    const buffer = await file.arrayBuffer();
-    const blob = await put(file.name, buffer, {
-      contentType: file.type,
-      access: "public",
-    });
+		const buffer = await file.arrayBuffer();
+		const blob = await put(file.name, buffer, {
+			contentType: file.type,
+			access: 'public',
+		});
 
-    return { success: true, url: blob.url };
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    return { success: false, error: "Failed to upload resume" };
-  }
+		return { success: true, url: blob.url };
+	} catch (error) {
+		console.error('Error uploading file:', error);
+		return { success: false, error: 'Failed to upload resume' };
+	}
 }
 
 export async function getAllApplicants(status?: ApplicantStatus) {
-  try {
-    const applicants = await prisma.applicant.findMany({
-      where: { aiProcessed: true, status },
-    });
-    return { success: true, applicants };
-  } catch (error) {
-    console.error("Error fetching applicants:", error);
-    return { success: false, error: "Failed to fetch applicants" };
-  }
+	try {
+		const applicants = await prisma.applicant.findMany({
+			where: { aiProcessed: true, status },
+		});
+		return { success: true, applicants };
+	} catch (error) {
+		console.error('Error fetching applicants:', error);
+		return { success: false, error: 'Failed to fetch applicants' };
+	}
 }
 
-type ApplicantStatus = "PENDING" | "IN_REVIEW" | "ACCEPTED" | "REJECTED";
+type ApplicantStatus = 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED';
 
-export async function updateApplicantStatus(
-  applicantId: number,
-  status: ApplicantStatus
-) {
-  try {
-    // First get the current applicant to know their previous status
-    const currentApplicant = await prisma.applicant.findUnique({
-      where: { id: applicantId },
-    });
+export async function updateApplicantStatus(applicantId: number, status: ApplicantStatus) {
+	try {
+		// First get the current applicant to know their previous status
+		const currentApplicant = await prisma.applicant.findUnique({
+			where: { id: applicantId },
+		});
 
-    if (!currentApplicant) {
-      return {
-        success: false,
-        error: "Applicant not found",
-      };
-    }
+		if (!currentApplicant) {
+			return {
+				success: false,
+				error: 'Applicant not found',
+			};
+		}
 
-    const updatedApplicant = await prisma.applicant.update({
-      where: { id: applicantId },
-      data: {
-        status,
-        statusUpdatedAt: new Date(),
-      },
-    });
+		const updatedApplicant = await prisma.applicant.update({
+			where: { id: applicantId },
+			data: {
+				status,
+				statusUpdatedAt: new Date(),
+			},
+		});
 
-    // Update the counts in JobApplication
-    await prisma.jobApplication.update({
-      where: { id: updatedApplicant.jobApplicationId },
-      data: {
-        // Increment new status count
-        acceptedCount:
-          status === "ACCEPTED"
-            ? { increment: 1 }
-            : currentApplicant.status === "ACCEPTED"
-            ? { decrement: 1 }
-            : undefined,
-        rejectedCount:
-          status === "REJECTED"
-            ? { increment: 1 }
-            : currentApplicant.status === "REJECTED"
-            ? { decrement: 1 }
-            : undefined,
-        inReviewCount:
-          status === "IN_REVIEW"
-            ? { increment: 1 }
-            : currentApplicant.status === "IN_REVIEW"
-            ? { decrement: 1 }
-            : undefined,
-      },
-    });
+		// Update the counts in JobApplication
+		await prisma.jobApplication.update({
+			where: { id: updatedApplicant.jobApplicationId },
+			data: {
+				// Increment new status count
+				acceptedCount:
+					status === 'ACCEPTED'
+						? { increment: 1 }
+						: currentApplicant.status === 'ACCEPTED'
+							? { decrement: 1 }
+							: undefined,
+				rejectedCount:
+					status === 'REJECTED'
+						? { increment: 1 }
+						: currentApplicant.status === 'REJECTED'
+							? { decrement: 1 }
+							: undefined,
+				inReviewCount:
+					status === 'IN_REVIEW'
+						? { increment: 1 }
+						: currentApplicant.status === 'IN_REVIEW'
+							? { decrement: 1 }
+							: undefined,
+			},
+		});
 
-    return {
-      success: true,
-      applicant: updatedApplicant,
-      message: `Application status updated to ${status}`,
-    };
-  } catch (error) {
-    console.error("Error updating applicant status:", error);
-    return {
-      success: false,
-      error: "Failed to update applicant status",
-    };
-  }
+		return {
+			success: true,
+			applicant: updatedApplicant,
+			message: `Application status updated to ${status}`,
+		};
+	} catch (error) {
+		console.error('Error updating applicant status:', error);
+		return {
+			success: false,
+			error: 'Failed to update applicant status',
+		};
+	}
 }

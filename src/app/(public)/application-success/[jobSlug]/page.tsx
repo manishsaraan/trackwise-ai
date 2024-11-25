@@ -75,14 +75,14 @@ const ApplicationSuccessPage = () => {
                 <li className="flex items-start gap-3">
                   <Mail className="w-5 h-5 mt-0.5 text-primary" />
                   <span className="text-sm">
-                    You'll receive a confirmation email with your application
+                    You&apos;ll receive a confirmation email with your application
                     details
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Bell className="w-5 h-5 mt-0.5 text-primary" />
                   <span className="text-sm">
-                    We'll notify you when the AI processing is complete
+                    We&apos;ll notify you when the AI processing is complete
                   </span>
                 </li>
                 <li className="flex items-start gap-3">

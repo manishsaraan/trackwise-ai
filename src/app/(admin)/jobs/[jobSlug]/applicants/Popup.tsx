@@ -11,7 +11,35 @@ import {
   Clock,
 } from "lucide-react";
 
-export const ApplicationDetailsModal = ({ isOpen, onClose, application }) => {
+// Add interface for the question structure
+interface ApplicationQuestion {
+  question: string;
+  answer: string;
+  timestamp: string;
+}
+
+// Add interface for the resume structure
+interface Resume {
+  url: string;
+  previewUrl: string;
+}
+
+// Add interface for the application data structure
+interface ApplicationData {
+  name: string;
+  appliedDate: string;
+  resume: Resume;
+  questions: ApplicationQuestion[];
+}
+
+// Add interface for the modal props
+interface ApplicationDetailsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  application: ApplicationData;
+}
+
+export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ isOpen, onClose, application }) => {
   // Example application data structure
   const applicationData = {
     name: "John Smith",
@@ -51,7 +79,7 @@ export const ApplicationDetailsModal = ({ isOpen, onClose, application }) => {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h2 className="text-2xl font-bold">
-              {applicationData.name}'s Application
+              {applicationData.name}&apos;s Application
             </h2>
             <p className="text-base-content/60 text-sm">
               Applied on{" "}
@@ -152,7 +180,7 @@ export const ApplicationDetailsModal = ({ isOpen, onClose, application }) => {
   );
 };
 
-const ViewApplicationButton = () => {
+const ViewApplicationButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

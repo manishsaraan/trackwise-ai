@@ -3,13 +3,13 @@ import { Github } from "lucide-react";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
-  showGithub?: boolean;
 }
 
 export default function PublicLayout({
   children,
-  showGithub = true, // Default to true
 }: PublicLayoutProps) {
+  const showGithub = true;
+  
   return (
     <div className="min-h-screen">
       {/* Topbar */}

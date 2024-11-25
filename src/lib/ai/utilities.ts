@@ -191,35 +191,6 @@ export async function parsePDF(pdfUrl: string) {
   }
 }
 
-export async function saveResumeToPinecone(docs: any, pdfFilePath: string) {
-  const pinecone = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY as string,
-  });
-
-  // Initialize the index
-  const index = pinecone.Index("pdf-cool");
-
-  // Use the filename (without extension) as the ID
-  const fileName = path.basename(pdfFilePath);
-  const id = path.basename(fileName, path.extname(fileName));
-
-  // Initialize the vector store
-  const vectorStore = await PineconeStore.fromDocuments(
-    docs,
-    new OpenAIEmbeddings({
-      openAIApiKey: OPENAI_API_KEY,
-    }),
-    {
-      pineconeIndex: index,
-      textKey: "text",
-      namespace: "resumes",
-      ids: [id], // Use the filename as the ID
-    }
-  );
-
-  return vectorStore;
-}
-
 export function getModel() {
   const model = new ChatOpenAI({
     modelName: "gpt-4o",
@@ -245,7 +216,6 @@ export async function parseResume(
 ): Promise<{ parsedOutput: any; parsedOutput2: any } | undefined> {
   const pdfContent = await parsePDF(pdfUrl);
 
-  const savedResume = await saveResumeToPinecone(pdfContent, pdfUrl);
   const resumeOutput = pdfContent[0].pageContent;
 
   const extractionPrompt = `
@@ -535,9 +505,9 @@ You can integrate this job description parsing prompt with the resume parsing pr
 
   try {
     // Trim whitespace and attempt to parse as JSON
-    const jsonResponse = response1.content?.trim();
-    const jsonResponse2 = response2.content?.trim();
-
+    const jsonResponse = typeof response1.content === 'string' ? response1.content.trim() : response1.content.toString().trim();
+    const jsonResponse2 = typeof response2.content === 'string' ? response2.content.trim() : response2.content.toString().trim();
+      
     // Remove extra characters that might be preventing parsing (if any)
     const correctedResponse = jsonResponse.replace(/^[^{]*|[^}]*$/g, ""); // Removes any text before the `{` and after the `}`
     const correctedResponse2 = jsonResponse2.replace(/^[^{]*|[^}]*$/g, ""); // Removes any text before the `{` and after the `}`
@@ -568,9 +538,11 @@ export async function getScoringData(
 
   try {
     // Remove any leading/trailing whitespace and newline characters
-    const cleanedContent = response2.content?.trim();
+    const cleanedContent = typeof response2.content === 'string' 
+        ? response2.content.trim() 
+        : response2.content.toString().trim();
     // Extract JSON content from markdown code block
-    const jsonContent = cleanedContent.match(/```json\n(.*?)```/s)[1];
+    const jsonContent = cleanedContent?.match(/```json\n([^]*?)```/)?.[1];
     if (!jsonContent) {
       console.error("No JSON content found in markdown code block.");
       return null;

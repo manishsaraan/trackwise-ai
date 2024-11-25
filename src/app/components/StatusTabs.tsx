@@ -16,7 +16,7 @@ interface StatusTabsProps {
     id: string;
     label: string;
     count?: number;
-    iconName: string;
+    iconName: keyof typeof iconMap;
     color: string;
     description: string;
   }>;

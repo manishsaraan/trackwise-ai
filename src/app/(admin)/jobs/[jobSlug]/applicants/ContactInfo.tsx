@@ -41,8 +41,6 @@ const ContactInfo = ({
               setShowCopied(true);
               setTimeout(() => setShowCopied(false), 2000);
             }}
-            className="btn btn-ghost btn-xs p-0 h-auto min-h-0"
-            iconClassName="w-3 h-3"
           />
         </div>
       </div>

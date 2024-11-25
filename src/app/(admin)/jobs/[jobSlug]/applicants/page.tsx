@@ -5,22 +5,57 @@ import ApplicantCard from "./ApplicantCard";
 import { getAllApplicants } from "@/app/actions/applicant";
 import { getJobBySlug } from "@/app/actions";
 
+type ApplicantStatus = "PENDING" | "IN_REVIEW" | "ACCEPTED" | "REJECTED";
+
+// Add interfaces for the data structures
+interface Job {
+  acceptedCount?: number;
+  inReviewCount?: number;
+  rejectedCount?: number;
+}
+
+interface Applicant {
+  id: number;
+  status: ApplicantStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  jobApplicationId: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  aiProcessed: boolean; 
+}
+
+interface ApplicantResponse {
+  success: boolean;
+  applicants: Applicant[];
+  error?: string;
+}
+
 export default async function ApplicantsPage({
   params,
   searchParams,
 }: {
   params: { jobSlug: string };
   searchParams: { status?: string };
-}) {
-  const job = await getJobBySlug(params.jobSlug);
+}): Promise<JSX.Element> {
+  const job: Job | null = await getJobBySlug(params.jobSlug);
   const status = searchParams.status || "ACCEPTED";
-  const applicants = await getAllApplicants(status);
+  const applicants: any = await getAllApplicants(status as ApplicantStatus);
 
   const statusTabs = StatusTabsFactory.createStatusTabs("applicants", {
-    ACCEPTED: job?.acceptedCount,
-    IN_REVIEW: job?.inReviewCount,
-    REJECTED: job?.rejectedCount,
-  });
+    ACCEPTED: job?.acceptedCount || 0,
+    IN_REVIEW: job?.inReviewCount || 0,
+    REJECTED: job?.rejectedCount || 0,
+  } as const) as { 
+    id: string; 
+    label: string; 
+    count?: number; 
+    iconName: "CheckCircle2" | "Clock" | "XCircle" | "CheckCircle";
+    color: string;
+    description: string;
+  }[];
 
   const { success, applicants: applicantsData } = applicants;
   return (
@@ -53,7 +88,7 @@ export default async function ApplicantsPage({
             </div>
           ) : (
             <div className="space-y-4">
-              {applicantsData.map((applicant) => (
+              {applicantsData.map((applicant: Applicant) => (
                 <ApplicantCard key={applicant.id} applicant={applicant} />
               ))}
             </div>

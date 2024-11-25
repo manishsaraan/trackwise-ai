@@ -5,20 +5,34 @@ import Link from "next/link";
 import JobListingsClient from "./JobListingsClient";
 import StatusTabsFactory from "@/factories/statusTabsFactory";
 import StatusTabs from "@/app/components/StatusTabs";
+import { JobStatus } from "@prisma/client";
 
 async function JobListingsDashboard({
   searchParams: { status },
 }: {
   searchParams: { status?: string };
 }) {
-  const jobs = await getAllJobs(status);
+  const jobs = await getAllJobs(status as JobStatus);
 
   const { jobs: jobsData, success } = jobs;
 
+  const transformedJobs = jobsData?.map(job => ({
+    ...job,
+    posted: job.createdAt.toISOString(),
+    createdAt: job.createdAt.toISOString()
+  }));
+
   const statusTabs = StatusTabsFactory.createStatusTabs("jobs", {
-    ACTIVE: jobsData.filter((job) => job.status === "ACTIVE").length,
-    CLOSED: jobsData.filter((job) => job.status === "CLOSED").length,
-  });
+    ACTIVE: transformedJobs?.filter((job) => job.status === "ACTIVE").length || 0,
+    CLOSED: transformedJobs?.filter((job) => job.status === "CLOSED").length || 0,
+  }) as {
+    id: string;
+    label: string;
+    count?: number;
+    iconName: "CheckCircle2" | "Clock" | "XCircle" | "CheckCircle";
+    color: string;
+    description: string;
+  }[];
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -52,7 +66,7 @@ async function JobListingsDashboard({
               </div>
             ) : (
               <div className="space-y-4">
-                <JobListingsClient initialJobs={jobsData} />
+                <JobListingsClient initialJobs={transformedJobs!} />
               </div>
             )}
           </div>

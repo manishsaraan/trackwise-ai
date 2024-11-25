@@ -1,7 +1,7 @@
 import JobForm from "@/components/JobForm";
 import { Plus, Info } from "lucide-react";
 
-export default function JobCreationPage() {
+export default function JobCreationPage(): JSX.Element {
   return (
     <div className="min-h-screen bg-base-100">
       <div className="">
@@ -44,8 +44,8 @@ export default function JobCreationPage() {
                 benefits to make the job more appealing.
               </li>
               <li>
-                Consider adding custom questions to assess candidates' fit for
-                the role.
+                Consider adding custom questions to assess candidates&apos; fit
+                for the role.
               </li>
               <li>
                 Review the job posting thoroughly before publishing to ensure

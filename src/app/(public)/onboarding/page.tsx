@@ -64,7 +64,7 @@ const OnboardingSuccess = ({
 
             {/* Next Steps */}
             <div className="space-y-4 w-full mb-8">
-              <h3 className="font-bold text-lg relative z-10">What's Next?</h3>
+              <h3 className="font-bold text-lg relative z-10">What&apos;s Next?</h3>
 
               {/* Confetti Effect - Positioned below the text */}
               <div className="relative h-1">
@@ -97,7 +97,7 @@ const OnboardingSuccess = ({
             <p className="text-base-content/70 flex items-center justify-center gap-2 mb-6">
               <span>Redirecting to jobs page in</span>
               <span className="countdown font-mono text-lg">
-                <span style={{ "--value": countdown }}></span>
+                <span style={{ "--value": countdown } as React.CSSProperties}></span>
               </span>
               <span>seconds</span>
             </p>
@@ -157,7 +157,22 @@ const onboardingSchema = z.object({
 
 type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
-const CompanyOnboarding = () => {
+// Add type for the file input event
+type FileInputEvent = React.ChangeEvent<HTMLInputElement>;
+
+// Add type for the save company data response
+interface SaveCompanyResponse {
+  success: boolean;
+  errors?: Array<{ message: string }>;
+  error?: string;
+}
+
+// Add type for the logo file
+interface LogoFile extends File {
+  url?: string;
+}
+
+const CompanyOnboarding = (): JSX.Element => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
@@ -213,6 +228,15 @@ const CompanyOnboarding = () => {
     }
   };
 
+  // Update handleLogoUpload with proper typing
+  const handleLogoUpload = (event: FileInputEvent) => {
+    const file = event.target.files?.[0] as LogoFile;
+    if (file) {
+      setValue("logo", file.url || '');
+    }
+  };
+
+  // Update onSubmit to properly type the result
   const onSubmit = async (data: OnboardingFormData) => {
     try {
       if (currentStep !== 3) {
@@ -220,31 +244,25 @@ const CompanyOnboarding = () => {
         return;
       }
 
-      // Final submission
       const isValid = await validateCurrentStep();
       if (!isValid) return;
 
-      // Prepare data for submission
       const companyData = {
         ...data,
-        logo: data.logo || null, // Ensure logo is null if not provided
+        logo: data.logo || '',
       };
 
-      console.log(companyData); // For debugging
-      // Save company data to the database
-      const result = await saveCompanyData(companyData);
+      const result = await saveCompanyData(companyData) as SaveCompanyResponse;
 
       if (result.success) {
         setIsSubmitted(true);
       } else {
-        // Handle validation errors
         if (result.errors) {
           const errorMessage = result.errors
             .map((err) => err.message)
             .join(", ");
           toast.error(errorMessage);
         } else {
-          // Handle general error
           toast.error(result.error || "Failed to save company data");
         }
       }
@@ -253,14 +271,6 @@ const CompanyOnboarding = () => {
         error instanceof Error ? error.message : "An unexpected error occurred";
       toast.error(errorMessage);
       console.error("Submission error:", error);
-    }
-  };
-
-  // Handle file upload for logo
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setValue("logo", file);
     }
   };
 

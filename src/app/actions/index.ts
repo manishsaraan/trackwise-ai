@@ -8,6 +8,7 @@ import {
   workModeEnum,
 } from "@/lib/validations/job-form";
 import { stackServerApp } from "@/stack";
+import { JobStatus } from "@prisma/client"; // Add this import
 
 export async function saveJobApplication(formData: FormData) {
   try {
@@ -91,7 +92,7 @@ export async function saveJobApplication(formData: FormData) {
   }
 }
 
-export async function getAllJobs(status?: string) {
+export async function getAllJobs(status?: JobStatus) {
   try {
     const jobs = await prisma.jobApplication.findMany({
       include: {
@@ -104,9 +105,7 @@ export async function getAllJobs(status?: string) {
       orderBy: {
         createdAt: "desc",
       },
-      where: {
-        status: status,
-      },
+      where: status ? { status } : undefined,
     });
     return { success: true, jobs };
   } catch (error) {
@@ -138,7 +137,7 @@ export async function getJobBySlug(slug: string) {
     return {
       id: job.id,
       title: job.jobTitle,
-      company: job.company,
+      company: job.companyId,
       location: job.location,
       salary: job.dontPreferSalary
         ? "Salary not disclosed"

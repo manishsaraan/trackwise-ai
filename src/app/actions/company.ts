@@ -19,7 +19,6 @@ type CompanyData = z.infer<typeof companySchema>;
 
 export async function saveCompanyData(data: CompanyData) {
   try {
-    // Validate the input data
     const validatedData = companySchema.parse(data);
 
     const newCompany = await prisma.company.create({

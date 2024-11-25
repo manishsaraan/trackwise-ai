@@ -110,7 +110,8 @@ export async function POST(request: Request) {
       }
 
       default: {
-        console.warn("Unknown webhook type:", payload.type);
+        const unknownPayload = payload as { type: string };
+        console.warn("Unknown webhook type:", unknownPayload.type);
         return NextResponse.json(
           { success: false, error: "Unknown webhook type" },
           { status: 400 }

@@ -192,13 +192,11 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
                 icon={Mail}
                 value={applicant.email}
                 label="Email"
-                className="text-text-secondary"
               />
               <ContactInfo
                 icon={Phone}
                 value={personalInformation.phone_number}
                 label="Phone"
-                className="text-text-secondary"
               />
             </div>
           </div>

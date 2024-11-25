@@ -33,6 +33,7 @@ interface Job {
   rejectedCount: number;
   inReviewCount: number;
   createdAt: string;
+  status: string;
 }
 
 const StatisticItem = ({
@@ -122,7 +123,7 @@ export default function JobListingsClient({
                   </div>
                 </div>
 
-                <JobActions jobSlug={job.id.toString()} status={job.status} />
+                <JobActions jobId={job.id} jobSlug={job.id.toString()} status={job.status} />
               </div>
             </div>
           </div>

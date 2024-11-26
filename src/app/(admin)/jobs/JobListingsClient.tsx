@@ -1,5 +1,8 @@
-import { AlertCircle, Briefcase, Calendar, CheckCircle2, MapPin, Monitor, Users, XCircle } from 'lucide-react';
+'use client';
+
+import { AlertCircle, Briefcase, Calendar, CheckCircle2, MapPin, Monitor, Users, XCircle, Copy } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import JobActions from './JobActions';
 
@@ -36,6 +39,16 @@ const StatisticItem = ({ count, label, icon: Icon, color }: StatisticItemProps) 
 );
 
 export default function JobListingsClient({ initialJobs }: { initialJobs: Job[] }) {
+	const handleCopyJobUrl = (jobId: number) => {
+		const jobUrl = `${window.location.origin}/careers/${jobId}`;
+		
+		navigator.clipboard.writeText(jobUrl).then(() => {
+			toast.success('Job URL copied to clipboard');
+		}).catch(() => {
+			toast.error('Failed to copy URL');
+		});
+	};
+
 	return (
 		<div className="space-y-4">
 			{initialJobs.map((job) => (
@@ -46,6 +59,13 @@ export default function JobListingsClient({ initialJobs }: { initialJobs: Job[] 
 								<div className="flex items-center gap-2 mb-2">
 									<h3 className="text-lg font-medium">{job.jobTitle}</h3>
 									{job.priority === 'high' && <div className="badge badge-primary badge-sm">Priority</div>}
+									<button
+										onClick={() => handleCopyJobUrl(job.id)}
+										className="btn btn-ghost btn-sm p-0 hover:bg-transparent"
+										title="Copy job URL"
+									>
+										<Copy className="w-4 h-4 text-base-content/70 hover:text-primary" />
+									</button>
 								</div>
 								<div className="flex flex-wrap gap-4 text-sm text-base-content/70">
 									<span className="flex items-center gap-1">

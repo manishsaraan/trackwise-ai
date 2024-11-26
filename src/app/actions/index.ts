@@ -121,6 +121,7 @@ export async function getJobBySlug(slug: string) {
 				id: parseInt(slug),
 			},
 			include: {
+				company: true,
 				questions: {
 					orderBy: {
 						orderIndex: 'asc',
@@ -137,7 +138,7 @@ export async function getJobBySlug(slug: string) {
 		return {
 			id: job.id,
 			title: job.jobTitle,
-			company: job.companyId,
+			company: job.company,
 			location: job.location,
 			salary: job.dontPreferSalary ? 'Salary not disclosed' : `$${job.salaryMin} - $${job.salaryMax}`,
 			workMode: job.workMode,

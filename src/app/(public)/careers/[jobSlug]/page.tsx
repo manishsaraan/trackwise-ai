@@ -12,15 +12,14 @@ async function JobApplicationPage({ params }: { params: { jobSlug: string } }) {
 		notFound();
 	}
 
-	// Assuming this comes from your company profile or environment
 	const companyInfo = {
-		name: 'Xyx Corp',
-		founded: 2020,
-		logo: '/company-logo.png',
-		location: 'New York, NY',
-		website: 'https://company-website.com',
-		linkedin: 'https://linkedin.com/company/company-name',
-		about: "We're building innovative solutions that transform businesses...",
+		name: jobData.company.companyName,
+		founded: jobData.company.foundedYear,
+		logo: jobData.company.logo || '/api/placeholder/64/64',
+		location: `${jobData.company.city}, ${jobData.company.country}`,
+		website: jobData.company.website || '#',
+		linkedin: jobData.company.linkedIn || '#',
+		about: jobData.company.description,
 	};
 
 	return (
@@ -31,7 +30,7 @@ async function JobApplicationPage({ params }: { params: { jobSlug: string } }) {
 					<div className="flex flex-col md:flex-row items-start gap-6">
 						{/* Company Logo */}
 						<div className="w-16 h-16 rounded-lg bg-base-200 flex items-center justify-center">
-							<img src="/api/placeholder/64/64" alt={companyInfo.name} className="w-12 h-12 rounded" />
+							<img src={companyInfo.logo} alt={companyInfo.name} className="w-12 h-12 rounded" />
 						</div>
 
 						{/* Company Info */}

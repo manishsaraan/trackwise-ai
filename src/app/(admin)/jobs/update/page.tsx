@@ -1,5 +1,5 @@
-import JobForm from "@/components/JobForm";
+import JobForm from '@/components/JobForm';
 
 export default function Home() {
-  return <JobForm />;
+	return <JobForm />;
 }

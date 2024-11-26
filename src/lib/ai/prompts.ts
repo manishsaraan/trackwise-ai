@@ -94,10 +94,7 @@ Ability to work independently and collaboratively in a team environment.
 Please send your CV here info@artzen.io
 `;
 
-export const scoringPrompt = (
-  formattedResume: string,
-  jobDescription: string
-) => `
+export const scoringPrompt = (formattedResume: string, jobDescription: string) => `
  
 As an AI assistant, your task is to evaluate how well a candidate's resume matches the requirements outlined in a job description. You will receive the parsed resume data and the job description data in JSON format. Compare the relevant information, skills, experience, and education to determine the candidate's suitability for the role.
 

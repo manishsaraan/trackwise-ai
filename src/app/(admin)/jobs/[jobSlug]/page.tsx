@@ -1,3 +1,3 @@
 export default function JobPage() {
-  return <div>View Job info</div>;
+	return <div>View Job info</div>;
 }

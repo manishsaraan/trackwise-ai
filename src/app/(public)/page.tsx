@@ -526,7 +526,7 @@ const LandingPage = () => {
 					</div>
 
 					<div className="border-t border-base-300 py-6 text-sm text-center text-base-content/60">
-						<p>© {new Date().getFullYear()} ApplicantAI. Open Source Project under MIT License</p>
+						<p>© {new Date().getFullYear()} TrackWiseAI. Open Source Project by Manish Saraan</p>
 					</div>
 				</div>
 			</footer>

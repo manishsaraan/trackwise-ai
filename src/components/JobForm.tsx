@@ -137,15 +137,8 @@ export default function JobForm() {
 
 	const generateJobDescription = async () => {
 		try {
-			const jobTitle = getValues('jobTitle');
-			const location = getValues('location');
-			const position = getValues('position');
-			const workMode = getValues('workMode');
-			const experienceMin = getValues('experienceMin');
-			const experienceMax = getValues('experienceMax');
-
 			// Call your AI-powered job description generation function here
-			const generatedDescription = 'sadfasdfasdfasdfsfsadfasdf';
+			const generatedDescription = 'job description';
 
 			// Update the textarea directly using setValue
 			setValue('jobDescription', generatedDescription, {
@@ -164,18 +157,6 @@ export default function JobForm() {
 			setValue('salaryMax', null);
 		}
 	}, [dontPreferSalary, setValue]);
-
-	const addQuestion = () => {
-		if (questions.length < 5) {
-			setQuestions([...questions, '']);
-
-			// Get current questions and add an empty one
-			const currentQuestions = getValues('questions') || [];
-			setValue('questions', [...currentQuestions, ''], {
-				shouldValidate: true,
-			});
-		}
-	};
 
 	const removeQuestion = (indexToRemove: number) => {
 		// Update local state

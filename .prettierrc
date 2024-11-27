@@ -10,27 +10,27 @@
 	"arrowParens": "avoid",
 	"plugins": ["@trivago/prettier-plugin-sort-imports"],
 	"importOrder": [
-	  "^(next/(.*)$)|^(next$)",
-	  "^(react/(.*)$)|^(react$)",
-	  "<THIRD_PARTY_MODULES>",
-	  "^components/(.*)$|^components/(.*)$",
-	  "^lib/(.*)$",
-	  "^utils/(.*)$",
-	  "^constants/(.*)$",
-	  "^data/(.*)$",
-	  "^styles/(.*)$",
-	  "^[./]",
-	  "^nprogress/nprogress.css$"
+		"^(next/(.*)$)|^(next$)",
+		"^(react/(.*)$)|^(react$)",
+		"<THIRD_PARTY_MODULES>",
+		"^components/(.*)$|^components/(.*)$",
+		"^lib/(.*)$",
+		"^utils/(.*)$",
+		"^constants/(.*)$",
+		"^data/(.*)$",
+		"^styles/(.*)$",
+		"^[./]",
+		"^nprogress/nprogress.css$"
 	],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true,
 	"importOrderGroupNamespaceSpecifiers": true,
 	"overrides": [
-	  {
-		"files": ["*.jsx", "*.tsx"],
-		"options": {
-			"parser": "babel-ts"
+		{
+			"files": ["*.jsx", "*.tsx"],
+			"options": {
+				"parser": "babel-ts"
+			}
 		}
-	  }
 	]
 }

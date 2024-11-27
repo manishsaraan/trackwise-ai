@@ -1,11 +1,5 @@
 import { Client } from '@upstash/qstash';
 
-// Define types for our jobs
-interface ResumeProcessJob {
-	userId: string;
-	resumeUrl: string;
-}
-
 interface EmailJob {
 	to: string;
 	subject: string;

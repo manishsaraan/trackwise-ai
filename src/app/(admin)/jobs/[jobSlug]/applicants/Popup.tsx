@@ -32,7 +32,7 @@ interface ApplicationDetailsModalProps {
 	application: ApplicationData;
 }
 
-export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ isOpen, onClose, application }) => {
+export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ isOpen, onClose }) => {
 	// Example application data structure
 	const applicationData = {
 		name: 'John Smith',
@@ -167,7 +167,7 @@ export const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = (
 };
 
 const ViewApplicationButton: React.FC = () => {
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [, setIsModalOpen] = useState(false);
 
 	return (
 		<div>

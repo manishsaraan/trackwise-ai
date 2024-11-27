@@ -21,7 +21,7 @@ interface ResumePopupProps {
 const ResumePopup = ({ isOpen, onClose, resumeUrl }: ResumePopupProps) => {
 	const [numPages, setNumPages] = useState<number | null>(null);
 	const [pageNumber, setPageNumber] = useState(1);
-	const [isLoading, setIsLoading] = useState(true);
+	const [, setIsLoading] = useState(true);
 
 	const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
 		setNumPages(numPages);

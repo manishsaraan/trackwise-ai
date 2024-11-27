@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 
 import { stackServerApp } from '@/stack';
 
-
 export async function ensureOnboarded() {
 	const user = await stackServerApp.getUser();
 	console.log('user', user?.serverMetadata);

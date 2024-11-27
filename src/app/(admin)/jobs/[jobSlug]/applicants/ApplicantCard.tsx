@@ -1,10 +1,5 @@
 'use client';
-
-import { useRouter } from 'next/navigation';
-
 import React from 'react';
-
-import { updateApplicantStatus } from '@/app/actions/applicant';
 import { statusConfig } from '@/utils/theme';
 import {
 	AlertCircle,
@@ -18,7 +13,6 @@ import {
 	Phone,
 	XCircle,
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import ContactInfo from './ContactInfo';
 
@@ -71,35 +65,7 @@ const getAIStatusDetails = (status: Applicant['status']) => {
 };
 
 export default function ApplicantCard({ applicant }: { applicant: any }) {
-	const router = useRouter();
 	const status = statusConfig[applicant.status as keyof typeof statusConfig];
-
-	const handleStatusChange = async (newStatus: 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED') => {
-		try {
-			const result = await updateApplicantStatus(applicant.id, newStatus);
-
-			if (result.success) {
-				toast.success(`Status updated to ${newStatus.toLowerCase()}`, {
-					description: `Applicant ${applicant.firstName} ${applicant.lastName} has been ${newStatus.toLowerCase()}.`,
-					position: 'top-right',
-					icon: '✅',
-				});
-				router.refresh();
-			} else {
-				toast.error('Failed to update status', {
-					description: result.error || 'Please try again later.',
-					position: 'top-right',
-					icon: '❌',
-				});
-			}
-		} catch (error) {
-			toast.error('Something went wrong', {
-				description: 'Failed to update applicant status. Please try again later.',
-				position: 'top-right',
-				icon: '❌',
-			});
-		}
-	};
 
 	const {
 		resumeData: { personalInformation, technicalSkills, workExperience },
@@ -160,7 +126,6 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 
 					<div className="flex flex-col items-end gap-4">
 						<ExternalLinks
-							applicant={applicant}
 							linkedinUrl={personalInformation.linkedin_profile}
 							websiteUrl={personalInformation.portfolio_website}
 							resumeUrl={applicant.resumeUrl}
@@ -198,12 +163,10 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 }
 
 const ExternalLinks = ({
-	applicant,
 	linkedinUrl,
 	websiteUrl,
 	resumeUrl,
 }: {
-	applicant: Applicant;
 	linkedinUrl?: string;
 	websiteUrl?: string;
 	resumeUrl?: string;
@@ -243,7 +206,7 @@ const ExternalLinks = ({
 
 	return (
 		<div className="flex items-center gap-1">
-			{links.map(({ url, icon: Icon, label, className, onClick }) => (
+			{links.map(({ icon: Icon, label, className, onClick }) => (
 				<div key={label} className="tooltip tooltip-bottom" data-tip={label}>
 					<button onClick={onClick} className="btn btn-ghost btn-sm hover:bg-base-200">
 						<Icon className={`w-4 h-4 ${className}`} />

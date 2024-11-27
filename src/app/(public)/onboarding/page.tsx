@@ -149,19 +149,11 @@ const onboardingSchema = z.object({
 
 type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
-// Add type for the file input event
-type FileInputEvent = React.ChangeEvent<HTMLInputElement>;
-
 // Add type for the save company data response
 interface SaveCompanyResponse {
 	success: boolean;
 	errors?: Array<{ message: string }>;
 	error?: string;
-}
-
-// Add type for the logo file
-interface LogoFile extends File {
-	url?: string;
 }
 
 const CompanyOnboarding = (): JSX.Element => {
@@ -215,15 +207,6 @@ const CompanyOnboarding = (): JSX.Element => {
 		}
 	};
 
-	// Update handleLogoUpload with proper typing
-	const handleLogoUpload = (event: FileInputEvent) => {
-		const file = event.target.files?.[0] as LogoFile;
-		if (file) {
-			setValue('logo', file.url || '');
-		}
-	};
-
-	// Update onSubmit to properly type the result
 	const onSubmit = async (data: OnboardingFormData) => {
 		try {
 			if (currentStep !== 3) {

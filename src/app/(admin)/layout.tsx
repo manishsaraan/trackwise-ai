@@ -18,7 +18,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const user = await stackServerApp.getUser({ or: 'redirect' });
+	await stackServerApp.getUser({ or: 'redirect' });
 	await ensureOnboarded();
 	return (
 		<div className="flex flex-col min-h-screen">

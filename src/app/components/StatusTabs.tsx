@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { statusConfig } from '@/utils/theme';
 import { CheckCircle, CheckCircle2, Clock, XCircle } from 'lucide-react';
 
 const iconMap = {
@@ -32,8 +31,6 @@ export default function StatusTabs({ statusTabs, defaultTab }: StatusTabsProps) 
 	const onClick = (tabId: string) => {
 		router.push(`?status=${tabId}`);
 	};
-
-	const config = statusConfig[currentStatus as keyof typeof statusConfig];
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">

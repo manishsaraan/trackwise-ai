@@ -29,12 +29,6 @@ interface Applicant {
 	aiProcessed: boolean;
 }
 
-interface ApplicantResponse {
-	success: boolean;
-	applicants: Applicant[];
-	error?: string;
-}
-
 export default async function ApplicantsPage({
 	params,
 	searchParams,

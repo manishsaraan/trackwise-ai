@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import prisma from '@/lib/prisma';
@@ -32,7 +31,6 @@ type WebhookPayload = UpdateWebhookPayload | DeleteWebhookPayload;
 
 export async function POST(request: Request) {
 	try {
-		const headersList = headers();
 		const payload: WebhookPayload = await request.json();
 
 		console.log(`Webhook received: ${payload.type}`, {

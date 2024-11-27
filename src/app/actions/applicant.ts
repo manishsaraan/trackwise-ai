@@ -42,7 +42,7 @@ export async function saveApplicantData(data: ApplicantData) {
 		}
 
 		// Create the applicant and answers in a transaction
-		const result = await prisma.$transaction(async tx => {
+		const result = await prisma.$transaction(async (tx: any) => {
 			// Create the applicant
 			const applicant = await tx.applicant.create({
 				data: {
@@ -58,7 +58,7 @@ export async function saveApplicantData(data: ApplicantData) {
 			});
 
 			// Create answers for each question
-			const answerPromises = job.questions.map((question, index) => {
+			const answerPromises = job.questions.map((question: any, index: number) => {
 				return tx.questionAnswer.create({
 					data: {
 						answer: validatedData.answers[index],

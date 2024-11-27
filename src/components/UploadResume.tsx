@@ -21,7 +21,6 @@ interface UploadResumeProps {
 export default function UploadResume({
 	onUploadSuccess,
 	onUploadError,
-	title,
 	allowedFileTypes,
 	maxSizeInMB,
 	acceptedFileTypes,

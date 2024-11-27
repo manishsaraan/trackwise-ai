@@ -237,7 +237,7 @@ const ExternalLinks = ({
 			className: 'text-base-content',
 			onClick: () => window.open(ensureProtocol(resumeUrl), '_blank'),
 		},
-	].filter((link) => link.url);
+	].filter(link => link.url);
 
 	if (links.length === 0) return null;
 

@@ -1,9 +1,9 @@
 'use server';
 
-import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { put } from '@vercel/blob';
 import { queueResumeProcessing } from '@/lib/upstash/queue';
+import { put } from '@vercel/blob';
+import { z } from 'zod';
 
 // Update the schema for the applicant data
 const applicantSchema = z.object({
@@ -23,71 +23,71 @@ type ApplicantData = z.infer<typeof applicantSchema>;
 export async function saveApplicantData(data: ApplicantData) {
 	try {
 		// Validate the input data
-    const validatedData = applicantSchema.parse(data);
+		const validatedData = applicantSchema.parse(data);
 
-    // Get the job questions to map with answers
-    const job = await prisma.jobApplication.findUnique({
-      where: { id: validatedData.jobApplicationId },
-      include: {
-        questions: {
-          orderBy: {
-            orderIndex: "asc",
-          },
-        },
-      },
-    });
+		// Get the job questions to map with answers
+		const job = await prisma.jobApplication.findUnique({
+			where: { id: validatedData.jobApplicationId },
+			include: {
+				questions: {
+					orderBy: {
+						orderIndex: 'asc',
+					},
+				},
+			},
+		});
 
-    if (!job) {
-      return { success: false, error: "Job not found" };
-    }
+		if (!job) {
+			return { success: false, error: 'Job not found' };
+		}
 
-    // Create the applicant and answers in a transaction
-    const result = await prisma.$transaction(async (tx) => {
-      // Create the applicant
-      const applicant = await tx.applicant.create({
-        data: {
-          firstName: validatedData.firstName,
-          lastName: validatedData.lastName,
-          email: validatedData.email,
-          phone: validatedData.phone,
-          resumeUrl: validatedData.resumeUrl,
-          currentSalary: validatedData.currentSalary,
-          receiveNotifications: validatedData.receiveNotifications,
-          jobApplicationId: validatedData.jobApplicationId,
-        },
-      });
+		// Create the applicant and answers in a transaction
+		const result = await prisma.$transaction(async tx => {
+			// Create the applicant
+			const applicant = await tx.applicant.create({
+				data: {
+					firstName: validatedData.firstName,
+					lastName: validatedData.lastName,
+					email: validatedData.email,
+					phone: validatedData.phone,
+					resumeUrl: validatedData.resumeUrl,
+					currentSalary: validatedData.currentSalary,
+					receiveNotifications: validatedData.receiveNotifications,
+					jobApplicationId: validatedData.jobApplicationId,
+				},
+			});
 
-      // Create answers for each question
-      const answerPromises = job.questions.map((question, index) => {
-        return tx.questionAnswer.create({
-          data: {
-            answer: validatedData.answers[index],
-            questionId: question.id,
-            applicantId: applicant.id,
-          },
-        });
-      });
+			// Create answers for each question
+			const answerPromises = job.questions.map((question, index) => {
+				return tx.questionAnswer.create({
+					data: {
+						answer: validatedData.answers[index],
+						questionId: question.id,
+						applicantId: applicant.id,
+					},
+				});
+			});
 
-      await Promise.all(answerPromises);
+			await Promise.all(answerPromises);
 
-      return applicant;
-    });
+			return applicant;
+		});
 
-    // Queue the resume processing
-    await queueResumeProcessing(result.id.toString());
+		// Queue the resume processing
+		await queueResumeProcessing(result.id.toString());
 
-    return {
-      success: true,
-      applicant: result,
-      message: "Application submitted successfully",
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, errors: error.errors };
-    }
-    console.error("Error saving applicant data:", error);
-    return { success: false, error: "An unexpected error occurred" };
-  }
+		return {
+			success: true,
+			applicant: result,
+			message: 'Application submitted successfully',
+		};
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			return { success: false, errors: error.errors };
+		}
+		console.error('Error saving applicant data:', error);
+		return { success: false, error: 'An unexpected error occurred' };
+	}
 }
 
 export async function uploadResume(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {

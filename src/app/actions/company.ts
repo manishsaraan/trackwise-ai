@@ -2,9 +2,10 @@
 
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+
 import { saveOnboardingData } from './onboarding-functions';
 
- const companySchema = z.object({
+const companySchema = z.object({
 	companyName: z.string().min(1, 'Company name is required'),
 	description: z.string().min(1, 'Description is required'),
 	companySize: z.string().min(1, 'Company size is required'),
@@ -16,7 +17,7 @@ import { saveOnboardingData } from './onboarding-functions';
 	logo: z.string().url('Company logo is required'),
 });
 
- type CompanyData = z.infer<typeof companySchema>;
+type CompanyData = z.infer<typeof companySchema>;
 
 export async function saveCompanyData(data: CompanyData) {
 	try {

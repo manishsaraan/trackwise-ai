@@ -41,17 +41,20 @@ const StatisticItem = ({ count, label, icon: Icon, color }: StatisticItemProps) 
 export default function JobListingsClient({ initialJobs }: { initialJobs: Job[] }) {
 	const handleCopyJobUrl = (jobId: number) => {
 		const jobUrl = `${window.location.origin}/careers/${jobId}`;
-		
-		navigator.clipboard.writeText(jobUrl).then(() => {
-			toast.success('Job URL copied to clipboard');
-		}).catch(() => {
-			toast.error('Failed to copy URL');
-		});
+
+		navigator.clipboard
+			.writeText(jobUrl)
+			.then(() => {
+				toast.success('Job URL copied to clipboard');
+			})
+			.catch(() => {
+				toast.error('Failed to copy URL');
+			});
 	};
 
 	return (
 		<div className="space-y-4">
-			{initialJobs.map((job) => (
+			{initialJobs.map(job => (
 				<div key={job.id} className="card bg-base-100 border border-base-200 hover:border-base-300 transition-colors">
 					<div className="card-body">
 						<div className="flex items-start justify-between gap-4">

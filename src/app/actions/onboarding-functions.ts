@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 
 import { stackServerApp } from '@/stack';
-import { CompanyData } from './company';
+
 
 export async function ensureOnboarded() {
 	const user = await stackServerApp.getUser();

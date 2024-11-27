@@ -47,7 +47,7 @@ export const jobFormSchema = z
 			}
 		}
 	})
-	.refine((data) => data.experienceMax >= data.experienceMin, {
+	.refine(data => data.experienceMax >= data.experienceMin, {
 		message: 'Maximum experience must be greater than or equal to minimum experience',
 		path: ['experienceMax'],
 	});

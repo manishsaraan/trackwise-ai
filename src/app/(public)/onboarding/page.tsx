@@ -31,7 +31,7 @@ const OnboardingSuccess = ({ onNavigate }: { onNavigate: (path: string) => void 
 		}, 5000);
 
 		const countdownInterval = setInterval(() => {
-			setCountdown((prev) => prev - 1);
+			setCountdown(prev => prev - 1);
 		}, 1000);
 
 		return () => {
@@ -211,7 +211,7 @@ const CompanyOnboarding = (): JSX.Element => {
 	const handleContinue = async () => {
 		const isValid = await validateCurrentStep();
 		if (isValid) {
-			setCurrentStep((prev) => prev + 1);
+			setCurrentStep(prev => prev + 1);
 		}
 	};
 
@@ -245,7 +245,7 @@ const CompanyOnboarding = (): JSX.Element => {
 				setIsSubmitted(true);
 			} else {
 				if (result.errors) {
-					const errorMessage = result.errors.map((err) => err.message).join(', ');
+					const errorMessage = result.errors.map(err => err.message).join(', ');
 					toast.error(errorMessage);
 				} else {
 					toast.error(result.error || 'Failed to save company data');
@@ -287,7 +287,7 @@ const CompanyOnboarding = (): JSX.Element => {
 
 	// Show success component if submission is successful
 	if (isSubmitted) {
-		return <OnboardingSuccess onNavigate={(path) => router.push(path)} />;
+		return <OnboardingSuccess onNavigate={path => router.push(path)} />;
 	}
 
 	return (
@@ -405,7 +405,7 @@ const CompanyOnboarding = (): JSX.Element => {
 										className={`select select-bordered w-full ${errors.companySize ? 'select-error' : ''}`}
 									>
 										<option value="">Select size</option>
-										{companySizes.map((size) => (
+										{companySizes.map(size => (
 											<option key={size} value={size}>
 												{size}
 											</option>
@@ -509,8 +509,8 @@ const CompanyOnboarding = (): JSX.Element => {
 									</label>
 									<UploadResume
 										title="Company Logo"
-										onUploadSuccess={(url) => setValue('logo', url)}
-										onUploadError={(error) => toast.error(error)}
+										onUploadSuccess={url => setValue('logo', url)}
+										onUploadError={error => toast.error(error)}
 										allowedFileTypes={['image/jpeg', 'image/png', 'image/gif']}
 										acceptedFileTypes=".jpg,.jpeg,.png,.gif"
 										maxSizeInMB={10}
@@ -567,7 +567,7 @@ const CompanyOnboarding = (): JSX.Element => {
 							<button
 								type="button"
 								className="btn btn-outline"
-								onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
+								onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
 								disabled={currentStep === 1}
 							>
 								Back

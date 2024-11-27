@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 const workModeOptions = [
 	{ value: 'On-site', label: 'On-site' },
 	{ value: 'Remote', label: 'Remote' },
-	{ value: 'Hybrid', label: 'Hybrid' }
+	{ value: 'Hybrid', label: 'Hybrid' },
 ];
 
 export default function JobForm() {
@@ -89,7 +89,7 @@ export default function JobForm() {
 			const jobData = {
 				...data,
 				workMode: data.workMode,
-				questions: data.questions.filter((q) => q && q.trim().length > 0),
+				questions: data.questions.filter(q => q && q.trim().length > 0),
 				salaryMin: data.dontPreferMin ? null : (data.salaryMin ?? null),
 				salaryMax: data.dontPreferMin ? null : (data.salaryMax ?? null),
 				dontPreferSalary: data.dontPreferMin,
@@ -114,15 +114,14 @@ export default function JobForm() {
 					questions: [],
 				});
 				setQuestions([]);
-				
+
 				// Add a small delay before redirect to show the success message
 				setTimeout(() => {
 					router.push('/jobs');
 				}, 1000);
-				
 			} else {
 				if (result.validationErrors) {
-					const errorMessage = result.validationErrors.map((err) => `${err.path.join('.')}: ${err.message}`).join('\n');
+					const errorMessage = result.validationErrors.map(err => `${err.path.join('.')}: ${err.message}`).join('\n');
 					setSubmitResult(`Validation Error: ${errorMessage}`);
 				} else {
 					setSubmitResult(`Error: ${result.error}`);
@@ -230,7 +229,7 @@ export default function JobForm() {
 					</label>
 					<select id="workMode" {...register('workMode')} className="select select-bordered w-full">
 						<option value="">Select work mode</option>
-						{workModeOptions.map((option) => (
+						{workModeOptions.map(option => (
 							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>
@@ -324,7 +323,7 @@ export default function JobForm() {
 						className="select select-bordered w-full"
 					>
 						<option value="">Select minimum experience</option>
-						{experienceOptions.map((option) => (
+						{experienceOptions.map(option => (
 							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>
@@ -344,7 +343,7 @@ export default function JobForm() {
 						disabled={selectedMinExperience === undefined}
 					>
 						<option value="">Select maximum experience</option>
-						{maxExperienceOptions.map((option) => (
+						{maxExperienceOptions.map(option => (
 							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>

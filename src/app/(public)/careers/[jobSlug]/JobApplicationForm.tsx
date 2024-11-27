@@ -24,9 +24,9 @@ const applicationSchema = z.object({
 		.string()
 		.min(1, 'Current CTC is required')
 		.regex(/^\d+$/, 'Please enter a valid number')
-		.transform((val) => parseInt(val, 10))
-		.refine((val) => val >= 0, 'CTC cannot be negative')
-		.refine((val) => val <= 100000000, 'Please enter a reasonable amount'),
+		.transform(val => parseInt(val, 10))
+		.refine(val => val >= 0, 'CTC cannot be negative')
+		.refine(val => val <= 100000000, 'Please enter a reasonable amount'),
 	resume: z.string().min(1, 'Resume is required'),
 	receiveEmails: z.boolean().optional(),
 	answers: z.array(z.string().min(50, 'Answer must be at least 50 characters long')).optional(),

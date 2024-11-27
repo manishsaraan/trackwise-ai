@@ -7,7 +7,7 @@
 		"build": "prisma generate && prisma migrate deploy && next build",
 		"start": "next start",
 		"lint": "next lint",
-		"format": "prettier --write .",
+		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\" --config ./.prettierrc",
 		"lint-fix": "eslint --fix . && prettier --write ."
 	},
 	"dependencies": {
@@ -17,8 +17,11 @@
 		"@langchain/pinecone": "^0.1.1",
 		"@prisma/client": "^5.19.1",
 		"@stackframe/stack": "^2.6.21",
+		"@typescript-eslint/eslint-plugin": "^6.21.0",
+		"@upstash/qstash": "^2.7.17",
 		"@vercel/blob": "^0.25.0",
 		"axios": "^1.7.7",
+		"framer-motion": "^11.11.17",
 		"langchain": "^0.3.2",
 		"lucide-react": "^0.454.0",
 		"next": "14.1.1",
@@ -39,7 +42,6 @@
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",
-		"@typescript-eslint/eslint-plugin": "^8.16.0",
 		"autoprefixer": "^10.0.1",
 		"daisyui": "^4.12.10",
 		"eslint": "^8",

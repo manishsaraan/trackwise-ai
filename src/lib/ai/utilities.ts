@@ -149,7 +149,7 @@ export async function parsePDF(pdfUrl: string) {
 		const docs = await loader.load();
 
 		// Combine all pages into a single document
-		const combinedContent = docs.map((doc) => doc.pageContent).join('\n\n');
+		const combinedContent = docs.map(doc => doc.pageContent).join('\n\n');
 		const pdfFileName = path.basename(pdfUrl);
 
 		return [

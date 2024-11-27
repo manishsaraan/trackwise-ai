@@ -25,7 +25,7 @@ export async function saveJobApplication(formData: FormData) {
 
 		const validatedData = jobFormSchema.parse(formData);
 
-		const savedJob = await prisma.$transaction(async (tx) => {
+		const savedJob = await prisma.$transaction(async tx => {
 			const workMode = workModeEnum[validatedData.workMode];
 
 			const job = await tx.jobApplication.create({
@@ -145,7 +145,7 @@ export async function getJobBySlug(slug: string) {
 			description: job.jobDescription,
 			position: job.position,
 			experienceRange: `${job.experienceMin} - ${job.experienceMax} years`,
-			questions: job.questions.map((q) => q.question),
+			questions: job.questions.map(q => q.question),
 			acceptedCount: job.acceptedCount,
 			rejectedCount: job.rejectedCount,
 			inReviewCount: job.inReviewCount,

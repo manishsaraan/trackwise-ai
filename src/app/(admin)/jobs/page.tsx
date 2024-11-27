@@ -13,15 +13,15 @@ async function JobListingsDashboard({ searchParams: { status } }: { searchParams
 
 	const { jobs: jobsData, success } = jobs;
 
-	const transformedJobs = jobsData?.map((job) => ({
+	const transformedJobs = jobsData?.map(job => ({
 		...job,
 		posted: job.createdAt.toISOString(),
 		createdAt: job.createdAt.toISOString(),
 	}));
 
 	const statusTabs = StatusTabsFactory.createStatusTabs('jobs', {
-		ACTIVE: transformedJobs?.filter((job) => job.status === 'ACTIVE').length || 0,
-		CLOSED: transformedJobs?.filter((job) => job.status === 'CLOSED').length || 0,
+		ACTIVE: transformedJobs?.filter(job => job.status === 'ACTIVE').length || 0,
+		CLOSED: transformedJobs?.filter(job => job.status === 'CLOSED').length || 0,
 	}) as {
 		id: string;
 		label: string;

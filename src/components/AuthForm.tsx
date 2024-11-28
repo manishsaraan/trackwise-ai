@@ -95,12 +95,12 @@ function AuthForm({ onSubmit, authType, showRegisterLink = true }: AuthFormProps
                   )}
                 </button>
   
-                {/* Register Link */}
-                {showRegisterLink && (
+                {/* Register Link */}             
                   <div className="text-center text-sm">
                     <span className="text-base-content/70">
-                      Don&apos;t have an account?{' '}
+                    {authType === 'login' ?'  Don&apos;t have an account' : 'Already have an account?'} 
                     </span>
+                    
                     <Link
                       href={authType === 'login' ? '/signup' : '/login'}
                       className="text-primary hover:text-primary/80 font-medium transition-colors"
@@ -108,7 +108,7 @@ function AuthForm({ onSubmit, authType, showRegisterLink = true }: AuthFormProps
                       {authType === 'login' ? 'Create one now' : 'Sign in'}
                     </Link>
                   </div>
-                )}
+               
               </form>
           
     );

@@ -23,6 +23,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { ensureOnboarded } from '@/app/actions/onboarding-functions';
+import { useSession } from 'next-auth/react';
 
 const OnboardingSuccess = () => {
 	const [countdown, setCountdown] = useState(5);
@@ -163,21 +164,22 @@ interface SaveCompanyResponse {
 const CompanyOnboarding = (): JSX.Element => {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+	const { update, data: session, status } = useSession();
     const router = useRouter();
 
-	useEffect(() => {
-		const checkOnboarding = async () => {
-			const result = await ensureOnboarded();
-			console.log('result', result);
-			if (!result.isOnboarded && result.redirectTo) {
-			  router.push(result.redirectTo);
-			}
+	// useEffect(() => {
+	// 	const checkOnboarding = async () => {
+	// 		const result = await ensureOnboarded();
+	// 		console.log('result', result);
+	// 		if (!result.isOnboarded && result.redirectTo) {
+	// 		  router.push(result.redirectTo);
+	// 		}
 
-			router.push('/jobs');
-		  };
+	// 		router.push('/jobs');
+	// 	  };
 	  
-		  checkOnboarding();
-	}, [ensureOnboarded]);
+	// 	  checkOnboarding();
+	// }, [ensureOnboarded]);
 	const {
 		register,
 		handleSubmit,
@@ -243,6 +245,7 @@ const CompanyOnboarding = (): JSX.Element => {
 			const result = (await saveCompanyData(companyData)) as SaveCompanyResponse;
 
 			if (result.success) {
+				await update({})
 				setIsSubmitted(true);
 			} else {
 				if (result.errors) {
@@ -304,7 +307,7 @@ const CompanyOnboarding = (): JSX.Element => {
 
 	return (
 		<div className="min-h-screen bg-base-200">
-			<div className="max-w-4xl mx-auto p-6">			
+			<div className="max-w-4xl mx-auto p-6">
 				{/* Combined Header and Progress */}
 				<div className="mb-8 text-center">
 					<h1 className="text-2xl font-bold mb-2">Setup Your Company Profile</h1>

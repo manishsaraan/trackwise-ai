@@ -54,7 +54,7 @@ export default async function ApplicantsPage({
 		color: string;
 		description: string;
 	}[];
-	console.log(job);
+
 	const { success, data: applicantsData } = applicants;
 
 	return (

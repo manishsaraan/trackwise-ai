@@ -186,7 +186,7 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 				return [];
 		}
 	};
-	console.log(applicant);
+
 	return (
 		<div className="card bg-base-100 border border-base-400/80 hover:border-base-500/90 transition-colors">
 			<div className="card-body">

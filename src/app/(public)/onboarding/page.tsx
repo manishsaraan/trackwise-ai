@@ -17,6 +17,7 @@ import {
 	Image as ImageIcon,
 	PartyPopper,
 	Users,
+	DollarSign,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -121,6 +122,7 @@ const step1Schema = z.object({
 	]),
 	city: z.string().min(2, 'City is required'),
 	country: z.string().min(2, 'Country is required'),
+	preferredCurrency: z.enum(['USD', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'SGD', 'AED']),
 });
 
 const step2Schema = z.object({
@@ -266,6 +268,17 @@ const CompanyOnboarding = (): JSX.Element => {
 			title: 'Finishing Up',
 			description: 'Add your company logo and online presence',
 		},
+	];
+
+	const currencies = [
+		{ code: 'USD', symbol: '$', name: 'US Dollar' },
+		{ code: 'EUR', symbol: '€', name: 'Euro' },
+		{ code: 'GBP', symbol: '£', name: 'British Pound' },
+		{ code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+		{ code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+		{ code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+		{ code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
+		{ code: 'AED', symbol: 'د.إ', name: 'UAE Dirham' },
 	];
 
 	// Show success component if submission is successful
@@ -434,6 +447,63 @@ const CompanyOnboarding = (): JSX.Element => {
 										</div>
 									</div>
 								</div>
+
+								<div className="form-control">
+									<label className="label">
+										<span className="label-text font-medium">Preferred Currency</span>
+										<span className="label-text-alt text-base-content/60">
+											For job postings and salary ranges
+										</span>
+									</label>
+									<div className="relative">
+										<DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
+										<select
+											{...register('preferredCurrency')}
+											className={`select select-bordered w-full pl-10 ${
+												errors.preferredCurrency ? 'select-error' : ''
+											}`}
+											defaultValue=""
+										>
+											<option value="" disabled>Select currency</option>
+											{currencies.map(currency => (
+												<option key={currency.code} value={currency.code}>
+													{currency.symbol} - {currency.name} ({currency.code})
+												</option>
+											))}
+										</select>
+									</div>
+									{errors.preferredCurrency && (
+										<label className="label">
+											<span className="label-text-alt text-error">
+												{errors.preferredCurrency.message}
+											</span>
+										</label>
+									)}
+								</div>
+
+								{/* Currency Preview Card */}
+								{watch('preferredCurrency') && (
+									<div className="bg-base-200/50 rounded-lg p-4 border border-base-300">
+										<h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+											<DollarSign className="w-4 h-4" />
+											Currency Preview
+										</h4>
+										<div className="space-y-2 text-sm">
+											<div className="flex items-center justify-between">
+												<span className="text-base-content/70">Salary Display</span>
+												<span className="font-medium">
+													{currencies.find(c => c.code === watch('preferredCurrency'))?.symbol}50,000
+												</span>
+											</div>
+											<div className="flex items-center justify-between">
+												<span className="text-base-content/70">Range Format</span>
+												<span className="font-medium">
+													{currencies.find(c => c.code === watch('preferredCurrency'))?.symbol}40,000 - {currencies.find(c => c.code === watch('preferredCurrency'))?.symbol}60,000
+												</span>
+											</div>
+										</div>
+									</div>
+								)}
 							</div>
 						)}
 						{currentStep === 2 && (

@@ -112,15 +112,34 @@ export async function uploadResume(formData: FormData): Promise<{ success: boole
 	}
 }
 
-export async function getAllApplicants(status?: ApplicantStatus) {
+interface GetApplicantsParams {
+	status: string;
+	jobId: number;
+}
+
+export async function getAllApplicants({ status, jobId }: GetApplicantsParams) {
 	try {
 		const applicants = await prisma.applicant.findMany({
-			where: { aiProcessed: true, status },
+			where: {
+				status: status as ApplicantStatus,
+				jobApplicationId: jobId,
+			},
+			
+			orderBy: {
+				createdAt: 'desc',
+			},
 		});
-		return { success: true, applicants };
+		
+		return {
+			success: true,
+			data: applicants,
+		};
 	} catch (error) {
 		console.error('Error fetching applicants:', error);
-		return { success: false, error: 'Failed to fetch applicants' };
+		return {
+			success: false,
+			error: 'Failed to fetch applicants',
+		};
 	}
 }
 

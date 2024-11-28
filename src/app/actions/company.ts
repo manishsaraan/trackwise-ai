@@ -16,6 +16,7 @@ const companySchema = z.object({
 	website: z.string().url('Company website URL is required'),
 	linkedIn: z.string().url('LinkedIn URL is required'),
 	logo: z.string().url('Company logo is required'),
+	preferredCurrency: z.string().min(1, 'Preferred currency is required'),
 });
 
 type CompanyData = z.infer<typeof companySchema>;

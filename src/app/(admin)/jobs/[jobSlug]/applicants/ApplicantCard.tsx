@@ -233,7 +233,7 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 									tabIndex={0} 
 									role="button"
 									onClick={() => setIsOpen(!isOpen)}
-									className="w-full btn btn-sm justify-between items-center inline-flex px-3 py-2 border border-base-300 rounded-lg bg-base-100 hover:bg-base-200"
+									className="w-full btn btn-sm justify-between items-center inline-flex px-3 py-1 border border-base-300 rounded-lg bg-base-100 hover:bg-base-200"
 								>
 									<span className="text-sm font-medium flex items-center">Change Status</span>
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

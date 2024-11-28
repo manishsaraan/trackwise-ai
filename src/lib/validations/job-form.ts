@@ -34,6 +34,14 @@ export const jobFormSchema = z
 			.array(z.string().min(1, 'Question is required').max(200, 'Question cannot exceed 200 characters'))
 			.max(5, 'Maximum 5 questions allowed'),
 		dontPreferMin: z.boolean(),
+		currentCtc: z.preprocess(
+			(val) => {
+				if (val === "" || val === null || val === undefined) return null;
+				const num = Number(val);
+				return isNaN(num) ? null : num;
+			},
+			z.number().nullable().optional()
+		),
 	})
 	.superRefine((data, ctx) => {
 		console.log('!data.dontPreferMin', !data.dontPreferMin);
@@ -59,6 +67,22 @@ export const jobFormSchema = z
 					code: z.ZodIssueCode.custom,
 					message: "Maximum salary must be greater than minimum salary",
 					path: ["salaryMax"],
+				});
+			}
+		}
+		if (data.currentCtc !== null && data.currentCtc !== undefined) {
+			if (data.currentCtc < 0) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "CTC cannot be negative",
+					path: ["currentCtc"],
+				});
+			}
+			if (data.currentCtc > 100000000) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: "Please enter a reasonable amount",
+					path: ["currentCtc"],
 				});
 			}
 		}

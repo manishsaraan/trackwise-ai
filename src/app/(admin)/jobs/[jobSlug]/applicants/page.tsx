@@ -11,6 +11,8 @@ type ApplicantStatus = 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED';
 
 // Add interfaces for the data structures
 interface Job {
+	id: number;
+	title: string;
 	acceptedCount?: number;
 	inReviewCount?: number;
 	rejectedCount?: number;
@@ -38,7 +40,7 @@ export default async function ApplicantsPage({
 }): Promise<JSX.Element> {
 	const job: Job | null = await getJobBySlug(params.jobSlug);
 	const status = searchParams.status || 'ACCEPTED';
-	const applicants: any = await getAllApplicants(status as ApplicantStatus);
+	const applicants: any = await getAllApplicants({ status, jobId: job?.id || 0 });
 
 	const statusTabs = StatusTabsFactory.createStatusTabs('applicants', {
 		ACCEPTED: job?.acceptedCount || 0,
@@ -52,8 +54,9 @@ export default async function ApplicantsPage({
 		color: string;
 		description: string;
 	}[];
+	console.log(job);
+	const { success, data: applicantsData } = applicants;
 
-	const { success, applicants: applicantsData } = applicants;
 	return (
 		<>
 			<div className="min-h-screen bg-base-100">
@@ -61,8 +64,8 @@ export default async function ApplicantsPage({
 					<div className="max-w-7xl mx-auto p-6">
 						<div className="flex justify-between items-center">
 							<div>
-								<h1 className="text-4xl font-bold">Applicants</h1>
-								<p className="text-base-content/60 text-sm mt-1">Manage applications for Full Stack Developer</p>
+								<h1 className="text-4xl font-bold mb-4">Applicants</h1>
+								<p className="text-base-content/60 text-sm mt-1">Manage applications for <b>{job?.title}</b></p>
 							</div>
 						</div>
 

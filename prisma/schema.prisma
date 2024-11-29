@@ -112,17 +112,14 @@ model QuestionAnswer {
 }
 
 model User {
-  id                   String   @id @default(uuid())
-  displayName          String
-  primaryEmail         String   @unique
-  primaryEmailVerified Boolean  @default(false)
-  profileImageUrl      String?  @db.Text
-  signedUpAt           DateTime @default(now())
-  oauthProviders       Json[] // Will store array of provider objects
-  company              Company? @relation(fields: [companyId], references: [id])
-  companyId            Int?     @unique
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id              String    @id @default(uuid())
+  email           String    @unique
+  hashedPassword  String
+  name            String?
+  company         Company?  @relation(fields: [companyId], references: [id])
+  companyId       Int?      @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([companyId])
 }

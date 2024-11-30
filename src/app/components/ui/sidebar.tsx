@@ -34,9 +34,9 @@ export default function Sidebar() {
 					</li>
 					<li>
 						<Link
-							href="/handler/account-settings"
+							href="/profile"
 							className={`flex items-center gap-3 px-6 py-3 rounded-none ${
-								pathname === '/handler/account-settings' ? 'active' : ''
+								pathname === '/profile' ? 'active' : ''
 							}`}
 						>
 							<Settings className="w-5 h-5" />

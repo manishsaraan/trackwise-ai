@@ -9,5 +9,6 @@ export const stackServerApp = new StackServerApp({
 		afterSignIn: '/onboarding',
 		afterSignUp: '/onboarding',
 		afterSignOut: '/',
+		accountSettings: '/profile',
 	},
 });

@@ -263,7 +263,7 @@ export default function JobForm() {
 						id="salaryMin"
 						type="number"
 						{...register('salaryMin', {
-							valueAsNumber: true,
+							setValueAs: (value) => (value === "" ? null : Number(value)),
 							disabled: dontPreferSalary,
 						})}
 						className={`input input-bordered w-full ${dontPreferSalary ? 'input-disabled bg-base-200' : ''}`}
@@ -282,7 +282,7 @@ export default function JobForm() {
 						id="salaryMax"
 						type="number"
 						{...register('salaryMax', {
-							valueAsNumber: true,
+							setValueAs: (value) => (value === "" ? null : Number(value)),
 							disabled: dontPreferSalary,
 						})}
 						className={`input input-bordered w-full ${dontPreferSalary ? 'input-disabled bg-base-200' : ''}`}

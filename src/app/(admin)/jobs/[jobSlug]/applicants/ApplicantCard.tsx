@@ -13,8 +13,10 @@ import {
 	Phone,
 	XCircle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import ContactInfo from './ContactInfo';
+import { updateApplicantStatus } from '@/app/actions/applicant';
 
 interface Applicant {
 	id: number;
@@ -85,6 +87,47 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 		return `${workExperience[0].job_title} at ${workExperience[0].company_name}`;
 	};
 
+	const [isOpen, setIsOpen] = React.useState(false);
+	const [isUpdating, setIsUpdating] = React.useState(false);
+
+	const handleStatusChange = async (newStatus: Applicant['status']) => {
+		try {
+			setIsUpdating(true);
+			const result = await updateApplicantStatus(applicant.id, newStatus);
+
+			if (result.success) {
+				toast.success(`Status updated to ${newStatus.toLowerCase().replace('_', ' ')}`, {
+					description: `${applicant.firstName} ${applicant.lastName}'s application has been updated.`,
+				});
+			} else {
+				toast.error('Failed to update status', {
+					description: result.error || 'An unexpected error occurred',
+				});
+			}
+		} catch (error) {
+			console.error('Error updating status:', error);
+			toast.error('Error updating status', {
+				description: 'An unexpected error occurred while updating the status.',
+			});
+		} finally {
+			setIsUpdating(false);
+			setIsOpen(false);
+		}
+	};
+
+	const getStatusOptions = (currentStatus: Applicant['status']) => {
+		switch (currentStatus) {
+			case 'REJECTED':
+				return ['ACCEPTED', 'IN_REVIEW'];
+			case 'IN_REVIEW':
+				return ['REJECTED', 'ACCEPTED'];
+			case 'ACCEPTED':
+				return ['IN_REVIEW', 'REJECTED'];
+			default:
+				return [];
+		}
+	};
+	console.log(applicant);
 	return (
 		<div className="card bg-base-100 border border-base-400/80 hover:border-base-500/90 transition-colors">
 			<div className="card-body">
@@ -131,7 +174,50 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 							resumeUrl={applicant.resumeUrl}
 						/>
 
-						<div className="flex flex-col gap-2">
+						<div className="flex flex-col gap-2 w-full max-w-[250px]">
+							<div className="dropdown dropdown-end w-full">
+								<div 
+									tabIndex={0} 
+									role="button"
+									onClick={() => setIsOpen(!isOpen)}
+									className="w-full btn btn-sm justify-between items-center inline-flex px-3 py-2 border border-base-300 rounded-lg bg-base-100 hover:bg-base-200"
+								>
+									<span className="text-sm font-medium flex items-center">Change Status</span>
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+									</svg>
+								</div>
+								{isOpen && (
+									<ul 
+										tabIndex={0} 
+										className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-full mt-1"
+									>
+										{getStatusOptions(applicant.status).map((option) => (
+											<li key={option}>
+												<button
+													onClick={() => handleStatusChange(option)}
+													disabled={isUpdating}
+													className="w-full px-4 py-2 text-sm hover:bg-base-200 rounded-lg transition-colors duration-150"
+												>
+													<div className="flex items-center gap-2 w-full">
+														{isUpdating ? (
+															<span className="loading loading-spinner loading-sm"></span>
+														) : (
+															<>
+																{option === 'ACCEPTED' && <CheckCircle2 className="w-4 h-4 text-success" />}
+																{option === 'REJECTED' && <XCircle className="w-4 h-4 text-error" />}
+																{option === 'IN_REVIEW' && <AlertCircle className="w-4 h-4 text-warning" />}
+																<span className="flex-1">{option.replace('_', ' ').toLowerCase()}</span>
+															</>
+														)}
+													</div>
+												</button>
+											</li>
+										))}
+									</ul>
+								)}
+							</div>
+
 							<ContactInfo icon={Mail} value={applicant.email} label="Email" />
 							<ContactInfo icon={Phone} value={personalInformation.phone_number} label="Phone" />
 						</div>

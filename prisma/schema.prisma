@@ -119,8 +119,12 @@ model User {
   profileImageUrl      String?  @db.Text
   signedUpAt           DateTime @default(now())
   oauthProviders       Json[] // Will store array of provider objects
+  company              Company? @relation(fields: [companyId], references: [id])
+  companyId            Int?     @unique
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model Company {
@@ -135,6 +139,8 @@ model Company {
   linkedIn    String?
   logo        String?
   jobs        JobApplication[]
+  user        User?           
+  userId      String           @unique
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 

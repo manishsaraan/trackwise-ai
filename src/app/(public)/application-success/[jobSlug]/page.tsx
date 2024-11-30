@@ -69,7 +69,7 @@ const ApplicationSuccessPage = () => {
 								<li className="flex items-start gap-3">
 									<Clock className="w-5 h-5 mt-0.5 text-primary" />
 									<span className="text-sm">The hiring team will review your application within 5-7 business days</span>
-								</li>
+						</li>
 							</ul>
 						</div>
 
@@ -78,10 +78,6 @@ const ApplicationSuccessPage = () => {
 							<a href="/" className="btn btn-primary">
 								<Home className="w-4 h-4 mr-2" />
 								Back to Home
-							</a>
-							<a href="/jobs" className="btn btn-outline">
-								Browse More Jobs
-								<ArrowRight className="w-4 h-4 ml-2" />
 							</a>
 						</div>
 					</div>

@@ -4,6 +4,8 @@ import prisma from '@/lib/prisma';
 import { queueResumeProcessing } from '@/lib/upstash/queue';
 import { put } from '@vercel/blob';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { ApplicantStatus } from '@prisma/client';
 
 // Update the schema for the applicant data
 const applicantSchema = z.object({
@@ -122,8 +124,6 @@ export async function getAllApplicants(status?: ApplicantStatus) {
 	}
 }
 
-type ApplicantStatus = 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED';
-
 export async function updateApplicantStatus(applicantId: number, status: ApplicantStatus) {
 	try {
 		// First get the current applicant to know their previous status
@@ -151,26 +151,29 @@ export async function updateApplicantStatus(applicantId: number, status: Applica
 			where: { id: updatedApplicant.jobApplicationId },
 			data: {
 				// Increment new status count
-				acceptedCount:
-					status === 'ACCEPTED'
-						? { increment: 1 }
-						: currentApplicant.status === 'ACCEPTED'
-							? { decrement: 1 }
+				acceptedCount: 
+					status === 'ACCEPTED' 
+						? { increment: 1 } 
+						: currentApplicant.status === 'ACCEPTED' 
+							? { decrement: 1 } 
 							: undefined,
-				rejectedCount:
-					status === 'REJECTED'
-						? { increment: 1 }
-						: currentApplicant.status === 'REJECTED'
-							? { decrement: 1 }
+				rejectedCount: 
+					status === 'REJECTED' 
+						? { increment: 1 } 
+						: currentApplicant.status === 'REJECTED' 
+							? { decrement: 1 } 
 							: undefined,
-				inReviewCount:
-					status === 'IN_REVIEW'
-						? { increment: 1 }
-						: currentApplicant.status === 'IN_REVIEW'
-							? { decrement: 1 }
+				inReviewCount: 
+					status === 'IN_REVIEW' 
+						? { increment: 1 } 
+						: currentApplicant.status === 'IN_REVIEW' 
+							? { decrement: 1 } 
 							: undefined,
 			},
 		});
+
+		// Revalidate the page to show updated data
+		revalidatePath('/jobs/[jobSlug]/applicants');
 
 		return {
 			success: true,

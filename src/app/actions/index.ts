@@ -5,8 +5,6 @@ import prisma from '@/lib/prisma';
 import { FormData, jobFormSchema, workModeEnum } from '@/lib/validations/job-form';
 import { stackServerApp } from '@/stack';
 // Ensure this path is correct for your Prisma client
-import { WorkMode } from '@prisma/client';
-import { JobStatus } from '@prisma/client';
 import { z } from 'zod';
 
 // Add this import
@@ -23,19 +21,34 @@ export async function saveJobApplication(formData: FormData) {
 			};
 		}
 
+		// Get user's company
+		const userWithCompany = await prisma.user.findUnique({
+			where: { id: user.id },
+			include: { company: true },
+		});
+
+		if (!userWithCompany?.company) {
+			return {
+				success: false,
+				error: 'Company not found',
+				message: 'You must be associated with a company to create a job',
+			};
+		}
+
 		const validatedData = jobFormSchema.parse(formData);
 
-		const savedJob = await prisma.$transaction(async tx => {
+		const savedJob = await prisma.$transaction(async (tx: any) => {
 			const workMode = workModeEnum[validatedData.workMode];
 
 			const job = await tx.jobApplication.create({
 				data: {
 					jobTitle: validatedData.jobTitle,
-					companyId: 4,
+					companyId: userWithCompany.company?.id,
 					location: validatedData.location,
 					jobDescription: validatedData.jobDescription,
 					position: validatedData.position,
-					workMode: workMode as WorkMode,
+					
+					workMode: workMode as any,
 					experienceMin: validatedData.experienceMin,
 					experienceMax: validatedData.experienceMax,
 					dontPreferSalary: validatedData.dontPreferMin,
@@ -92,7 +105,7 @@ export async function saveJobApplication(formData: FormData) {
 	}
 }
 
-export async function getAllJobs(status?: JobStatus) {
+export async function getAllJobs(status?: any) {
 	try {
 		const jobs = await prisma.jobApplication.findMany({
 			include: {
@@ -145,7 +158,7 @@ export async function getJobBySlug(slug: string) {
 			description: job.jobDescription,
 			position: job.position,
 			experienceRange: `${job.experienceMin} - ${job.experienceMax} years`,
-			questions: job.questions.map(q => q.question),
+			questions: job.questions.map((q: any) => q.question),
 			acceptedCount: job.acceptedCount,
 			rejectedCount: job.rejectedCount,
 			inReviewCount: job.inReviewCount,

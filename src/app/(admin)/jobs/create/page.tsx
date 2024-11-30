@@ -1,5 +1,5 @@
 import JobForm from '@/components/JobForm';
-import { Info, Plus } from 'lucide-react';
+import { ArrowLeft, Info, Plus } from 'lucide-react';
 
 export default function JobCreationPage(): JSX.Element {
 	return (
@@ -8,13 +8,13 @@ export default function JobCreationPage(): JSX.Element {
 				<div className="max-w-7xl mx-auto p-6">
 					<div className="flex justify-between items-center mb-8">
 						<div>
-							<h1 className="text-4xl font-bold">Create a New Job</h1>
+							<h1 className="text-4xl font-bold mb-4">Create a New Job</h1>
 							<p className="text-base-content/60 text-sm mt-1">
 								Fill out the form to post a new job opportunity and attract qualified candidates.
 							</p>
 						</div>
-						<a href="/jobs" className="btn btn-primary btn-sm flex items-center gap-2">
-							<Plus className="w-4 h-4" />
+						<a href="/jobs" className="btn btn-primary">
+							<ArrowLeft className="w-4 h-4" />
 							Back to My Jobs
 						</a>
 					</div>

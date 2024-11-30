@@ -12,8 +12,10 @@ import {
 	Mail,
 	Phone,
 	XCircle,
+	ChevronRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState, useRef, useEffect } from 'react';
 
 import ContactInfo from './ContactInfo';
 import { updateApplicantStatus } from '@/app/actions/applicant';
@@ -65,6 +67,63 @@ const getAIStatusDetails = (status: Applicant['status']) => {
 			};
 	}
 };
+
+interface SkillsTooltipProps {
+	visibleSkills: string[];
+	hiddenSkills: string[];
+}
+
+function SkillsTooltip({ visibleSkills, hiddenSkills }: SkillsTooltipProps) {
+	const [showTooltip, setShowTooltip] = useState(false);
+	const tooltipRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+				setShowTooltip(false);
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
+
+	return (
+		<div className="flex flex-wrap gap-2 items-center">
+			{visibleSkills.map((skill, index) => (
+				<span key={index} className="badge border-base-400/80 badge-ghost badge-sm text-text-secondary">
+					{skill}
+				</span>
+			))}
+
+			{hiddenSkills.length > 0 && (
+				<div className="relative" ref={tooltipRef}>
+					<button
+						className="badge badge-ghost badge-sm text-text-muted hover:bg-base-200 transition-colors duration-200"
+						onMouseEnter={() => setShowTooltip(true)}
+						onClick={() => setShowTooltip(!showTooltip)}
+					>
+						+{hiddenSkills.length} more
+						<ChevronRight className="w-3 h-3 ml-0.5" />
+					</button>
+
+					{showTooltip && (
+						<div className="absolute z-50 bg-base-100 shadow-lg rounded-lg p-3 min-w-[200px] max-w-[300px] border border-base-300 top-full mt-2 right-0">
+							<div className="flex flex-wrap gap-1.5">
+								{hiddenSkills.map((skill, index) => (
+									<span key={index} className="badge border-base-400/80 badge-ghost badge-sm text-text-secondary">
+										{skill}
+									</span>
+								))}
+							</div>
+							<div className="absolute -top-2 right-4 w-4 h-4 rotate-45 bg-base-100 border-t border-l border-base-300" />
+						</div>
+					)}
+				</div>
+			)}
+		</div>
+	);
+}
 
 export default function ApplicantCard({ applicant }: { applicant: any }) {
 	const status = statusConfig[applicant.status as keyof typeof statusConfig];
@@ -154,16 +213,10 @@ export default function ApplicantCard({ applicant }: { applicant: any }) {
 						</div>
 						<div className="mt-4">
 							<h4 className="text-sm font-medium text-text-primary mb-2">Key Skills</h4>
-							<div className="flex flex-wrap gap-1">
-								{technicalSkills.slice(0, 5).map((skill: string, index: number) => (
-									<span key={index} className="badge border-base-400/80 badge-ghost badge-sm text-text-secondary">
-										{skill}
-									</span>
-								))}
-								{technicalSkills.length > 5 && (
-									<span className="badge badge-ghost badge-sm text-text-muted">+{technicalSkills.length - 5} more</span>
-								)}
-							</div>
+							<SkillsTooltip 
+								visibleSkills={technicalSkills.slice(0, 5)}
+								hiddenSkills={technicalSkills.slice(5)}
+							/>
 						</div>
 					</div>
 

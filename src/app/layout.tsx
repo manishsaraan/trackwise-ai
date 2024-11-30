@@ -2,10 +2,8 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import localFont from 'next/font/local';
 
-import { StackProvider, StackTheme } from '@stackframe/stack';
 import { Toaster } from 'sonner';
-
-import { stackServerApp } from '../stack';
+ 
 import './globals.css';  
 import SessionProvider from '@/components/SessionProvider';
 
@@ -32,13 +30,9 @@ export default function RootLayout({
 	return (
 		<html data-theme="cmyk" lang="en">
 			<body className={`${cabinetGrotesk.variable} ${plusJakartaSans.variable}`}>
-				<SessionProvider>
-					<StackProvider app={stackServerApp}>
-						<StackTheme>
+				<SessionProvider>					 
 						<Toaster />
-						<div className="min-h-screen bg-base-100">{children}</div>
-						</StackTheme>
-					</StackProvider>
+						<div className="min-h-screen bg-base-100">{children}</div>					 
 				</SessionProvider>
 			</body>
 		</html>

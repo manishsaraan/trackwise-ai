@@ -1,8 +1,7 @@
 'use server';
 
 import { getUserId } from '@/lib/server-utils';
-import prisma from '@/lib/prisma';
-import { stackServerApp } from '@/stack';
+import prisma from '@/lib/prisma'; 
 
 interface OnboardingCheckResult {
 	isOnboarded: boolean;
@@ -37,12 +36,10 @@ export async function ensureOnboarded(): Promise<OnboardingCheckResult> {
 }
 
 export async function saveOnboardingData(companyInfo: any) {
-	const user = await stackServerApp.getUser();
-	console.log('user', user);
+	const userId = await getUserId();
+	console.log('userId', userId);
 	try {
-		await user?.update({
-			serverMetadata: { onboarded: true, ...companyInfo },
-		});
+		 
 	} catch (error) {
 		console.error(error);
 	}

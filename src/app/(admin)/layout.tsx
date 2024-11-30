@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 
 import Navigation from '@/app/components/navigation';
 import Footer from '@/app/components/ui/footer';
-import Sidebar from '@/app/components/ui/sidebar';
-import { stackServerApp } from '@/stack';
+import Sidebar from '@/app/components/ui/sidebar'; 
 
 import { ensureOnboarded } from '../actions/onboarding-functions';
 import '../globals.css';
@@ -18,7 +17,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	await stackServerApp.getUser({ or: 'redirect' });
+ 
 	await ensureOnboarded();
 	return (
 		<div className="flex flex-col min-h-screen">

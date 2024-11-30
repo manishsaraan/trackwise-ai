@@ -4,8 +4,7 @@ import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
 import { saveOnboardingData } from './onboarding-functions';
-import { stackServerApp } from '@/stack';
-import { getSession, getUserId } from '@/lib/server-utils';
+import {  getUserId } from '@/lib/server-utils';
 
 const companySchema = z.object({
 	companyName: z.string().min(1, 'Company name is required'),

@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-import { getUserId } from '@/lib/server-utils';
+import { getCompanyId, getUserId } from '@/lib/server-utils';
 import { FormData, jobFormSchema, workModeEnum } from '@/lib/validations/job-form';
 import { z } from 'zod';
 
@@ -103,6 +103,7 @@ export async function saveJobApplication(formData: FormData) {
 
 export async function getAllJobs(status?: any) {
 	try {
+		const companyId = await getCompanyId();
 		const jobs = await prisma.jobApplication.findMany({
 			include: {
 				questions: {
@@ -114,7 +115,10 @@ export async function getAllJobs(status?: any) {
 			orderBy: {
 				createdAt: 'desc',
 			},
-			where: status ? { status } : undefined,
+			where: {
+				...(status ? { status } : {}),
+				...(companyId ? { companyId } : {})
+			},
 		});
 		return { success: true, jobs };
 	} catch (error) {

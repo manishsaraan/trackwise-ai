@@ -15,3 +15,13 @@ export async function getUserId() {
 
 	return session.user.id;
 }
+
+export async function getCompanyId() {
+	const session = await auth();
+
+	if(!session) {
+		return null;
+	}
+
+	return session.user.company.id;
+}

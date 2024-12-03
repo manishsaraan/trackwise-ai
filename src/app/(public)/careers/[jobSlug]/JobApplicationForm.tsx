@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import { saveApplicantData } from '@/app/actions/applicant';
-import UploadResume from '@/components/UploadResume';
+import UploadResume from '@/components/upload-resume';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';

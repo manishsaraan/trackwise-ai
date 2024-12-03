@@ -8,7 +8,7 @@ import { FormData, jobFormSchema } from '@/lib/validations/job-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit, Info, Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import JobTitleInput from './JobTitleInput';
+import JobTitleInput from '@/components/job-title-input';
 
 const workModeOptions = [
 	{ value: 'On-site', label: 'On-site' },

@@ -5,7 +5,7 @@ import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
  
 import './globals.css';  
-import SessionProvider from '@/components/SessionProvider';
+import SessionProvider from '@/components/context/session-provider';
 
 const cabinetGrotesk = localFont({
 	src: '../assets/fonts/CabinetGrotesk_Complete/Variable/CabinetGrotesk-Variable.ttf',

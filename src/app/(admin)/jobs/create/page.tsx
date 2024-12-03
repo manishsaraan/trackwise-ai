@@ -1,4 +1,4 @@
-import JobForm from '@/components/JobForm';
+import JobForm from '@/components/job-form';
 import { ArrowLeft, Info, Plus } from 'lucide-react';
 
 export default function JobCreationPage(): JSX.Element {

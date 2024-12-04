@@ -2,7 +2,7 @@ import React from 'react';
 
 import { getJobBySlug } from '@/app/actions';
 import { getAllApplicants } from '@/app/actions/applicant';
-import StatusTabs from '@/app/components/StatusTabs';
+import StatusTabs from '@/components/status-tabs';
 import StatusTabsFactory from '@/factories/statusTabsFactory';
 
 import ApplicantCard from './ApplicantCard';

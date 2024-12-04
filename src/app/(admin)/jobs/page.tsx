@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { getAllJobs } from '@/app/actions';
-import StatusTabs from '@/app/components/StatusTabs';
+import StatusTabs from '@/components/status-tabs';
 import StatusTabsFactory from '@/factories/statusTabsFactory';
 import { JobStatus } from '@prisma/client';
 import { Plus } from 'lucide-react';

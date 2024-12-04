@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 
-import Navigation from '@/app/components/navigation';
-import Footer from '@/app/components/ui/footer';
-import Sidebar from '@/app/components/ui/sidebar'; 
-import { auth } from "@/lib/auth";
-import { ensureOnboarded } from '../actions/onboarding-functions';
+import Navigation from '@/components/topbar';
+import Footer from '@/components/footer';
+import Sidebar from '@/components/sidebar'; 
 import '../globals.css'; 
 
 export const metadata: Metadata = {
@@ -17,10 +15,6 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	 
-	 
-
-	 
 
 	return (
 		<div className="flex flex-col min-h-screen">

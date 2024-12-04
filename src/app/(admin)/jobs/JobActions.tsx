@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { updateJobStatus } from '@/app/actions';
-import { DropdownItem, DropdownWrapper } from '@/app/components/ui/dropdown';
+import { DropdownItem, DropdownWrapper } from '@/components/dropdown-options';
 import { ArrowUpDown, MoreHorizontal, Users } from 'lucide-react';
 import { toast } from 'sonner';
 

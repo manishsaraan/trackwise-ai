@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import GoogleSignIn from '@/app/components/ui/GoogleSignIn';
 import { Brain, CheckCircle, Clock, Code2, Github, LineChart, Search, Star, Users, Zap } from 'lucide-react';
 
 const LandingPage = () => {
@@ -64,7 +63,7 @@ const LandingPage = () => {
 							</p>
 
 							<div className="flex items-center justify-center gap-4 mb-8">
-								<GoogleSignIn />
+							 
 								<a
 									href="https://github.com/yourusername/yourrepo"
 									className="btn btn-outline gap-2"
@@ -458,7 +457,7 @@ const LandingPage = () => {
 						Be part of the future of hiring technology. Contribute, customize, and build with us.
 					</p>
 					<div className="flex justify-center gap-4">
-						<GoogleSignIn />
+					 
 						<a
 							href="https://github.com/yourusername/yourrepo"
 							className="btn btn-outline gap-2"

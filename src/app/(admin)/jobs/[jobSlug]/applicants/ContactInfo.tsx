@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import CopyButton from '@/app/components/CopyButton';
+import CopyButton from '@/components/copy-button';
 import { LucideIcon } from 'lucide-react';
 
 const ContactInfo = ({ icon: Icon, value, label }: { icon: LucideIcon; value: string; label: string }) => {

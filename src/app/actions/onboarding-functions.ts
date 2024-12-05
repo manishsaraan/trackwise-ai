@@ -1,7 +1,6 @@
 'use server';
 
 import { getSession, getUserId } from '@/lib/server-utils';
-import prisma from '@/lib/prisma'; 
 
 interface OnboardingCheckResult {
 	isOnboarded: boolean;

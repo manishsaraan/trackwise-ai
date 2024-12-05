@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
-import { LogOut, Mail, User, Shield } from 'lucide-react';
-import { ensureOnboarded } from '@/app/actions/onboarding-functions';
+import { LogOut, Mail, Shield } from 'lucide-react';
 
 function ProfilePage() {
 	const { data: session } = useSession();

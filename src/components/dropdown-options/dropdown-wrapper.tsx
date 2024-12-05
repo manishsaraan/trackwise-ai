@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { DropdownItem } from '@/components/dropdown-options/dropdown-options-item';
 
 interface DropdownWrapperProps {
 	children: ReactNode;

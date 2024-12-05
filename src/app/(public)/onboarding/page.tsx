@@ -22,7 +22,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { ensureOnboarded } from '@/app/actions/onboarding-functions';
 import { useSession } from 'next-auth/react';
 
 const OnboardingSuccess = () => {

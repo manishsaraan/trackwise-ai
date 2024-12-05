@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ArrowRight, Bell, CheckCircle, Clock, Cpu, Home, Mail } from 'lucide-react';
+import { Bell, CheckCircle, Clock, Cpu, Home, Mail } from 'lucide-react';
 
 const ApplicationSuccessPage = () => {
 	return (

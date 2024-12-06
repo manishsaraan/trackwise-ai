@@ -1,7 +1,7 @@
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import axios from 'axios';
 import path from 'path';
-import { extractionPromptFn, extractJobDescriptionFn, jobDescription , scoringPrompt} from '@/lib/ai/prompts'
+import { extractResumeInfoFn, extractJobDescriptionFn, scoringPrompt} from '@/lib/ai/prompts'
 import { getModel } from '@/lib/ai/openai';
 
 export function formatResumeData(resumeData: any) {
@@ -159,12 +159,12 @@ export async function parsePDF(pdfUrl: string) {
 	}
 }
 
-export async function parseResume(pdfUrl: string): Promise<{ parsedOutput: any; parsedOutput2: any } | undefined> {
+export async function parseResume(pdfUrl: string, jobDescription:string): Promise<{ parsedOutput: any; parsedOutput2: any } | undefined> {
 	const pdfContent = await parsePDF(pdfUrl);
 
 	const resumeOutput = pdfContent[0].pageContent;
 
-    const extractionPrompt = extractionPromptFn(resumeOutput);
+    const extractionPrompt = extractResumeInfoFn(resumeOutput);
 	const extractJobDescription = extractJobDescriptionFn(jobDescription);
 
 	const chain1 = getModel();
@@ -199,10 +199,8 @@ export async function parseResume(pdfUrl: string): Promise<{ parsedOutput: any; 
 }
 
 export async function getScoringData(parsedPdfData: any, jobDescription: string) {
-	// const formattedResume = formatResumeData(parsedPdfData);
-	// console.log(formattedResume, "formattedResume");
 	const getPrompt = scoringPrompt(parsedPdfData, jobDescription);
-
+console.log(getPrompt,"*dfdf")
 	const chain1 = getModel();
 	const response2 = await chain1.invoke({
 		input: getPrompt,

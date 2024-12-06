@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
 		console.log('Processing resume for application:', applicationId);
 		// Parse the resume from the URL
-		const parsedResume = await parseResume(applicant.resumeUrl);
+		const parsedResume = await parseResume(applicant.resumeUrl, applicant.jobApplication.jobDescription);
 
 		const resumeData = {
 			technicalSkills: parsedResume?.parsedOutput.technical_skills,
@@ -122,8 +122,9 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ error: 'Application not found or resume URL missing' }, { status: 404 });
 		}
 
+		console.log('Processing resume for application:', applicationId);
 		// Parse the resume from the URL
-		const parsedResume = await parseResume(applicant.resumeUrl);
+		const parsedResume = await parseResume(applicant.resumeUrl, applicant.jobApplication.jobDescription);
 
 		const resumeData = {
 			technicalSkills: parsedResume?.parsedOutput.technical_skills,
@@ -140,7 +141,7 @@ export async function GET(req: NextRequest) {
 			const updatedApplicant = await tx.applicant.update({
 				where: { id: parseInt(applicationId) },
 				data: {
-					status: 'IN_REVIEW' as ApplicantStatus,
+					status: scoringData.recommendation as ApplicantStatus,
 					statusUpdatedAt: new Date(),
 					explanation: scoringData.explanation,
 					resumeData: resumeData,

@@ -6,7 +6,8 @@ import { StackProvider, StackTheme } from '@stackframe/stack';
 import { Toaster } from 'sonner';
 
 import { stackServerApp } from '../stack';
-import './globals.css';
+import './globals.css';  
+import SessionProvider from '@/components/SessionProvider';
 
 const cabinetGrotesk = localFont({
 	src: '../assets/fonts/CabinetGrotesk_Complete/Variable/CabinetGrotesk-Variable.ttf',
@@ -31,12 +32,14 @@ export default function RootLayout({
 	return (
 		<html data-theme="cmyk" lang="en">
 			<body className={`${cabinetGrotesk.variable} ${plusJakartaSans.variable}`}>
-				<StackProvider app={stackServerApp}>
-					<StackTheme>
+				<SessionProvider>
+					<StackProvider app={stackServerApp}>
+						<StackTheme>
 						<Toaster />
 						<div className="min-h-screen bg-base-100">{children}</div>
-					</StackTheme>
-				</StackProvider>
+						</StackTheme>
+					</StackProvider>
+				</SessionProvider>
 			</body>
 		</html>
 	);

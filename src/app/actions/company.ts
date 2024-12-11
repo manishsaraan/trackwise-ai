@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { saveOnboardingData } from './onboarding-functions';
 import { stackServerApp } from '@/stack';
+import { getSession, getUserId } from '@/lib/server-utils';
 
 const companySchema = z.object({
 	companyName: z.string().min(1, 'Company name is required'),
@@ -23,9 +24,9 @@ type CompanyData = z.infer<typeof companySchema>;
 
 export async function saveCompanyData(data: CompanyData) {
 	try {
-		const user = await stackServerApp.getUser();
-
-		if (!user) {
+		const userId = await getUserId();
+		
+		if (!userId) {
 			return {
 				success: false,
 				error: 'Authentication required',
@@ -39,13 +40,13 @@ export async function saveCompanyData(data: CompanyData) {
 		const newCompany = await prisma.company.create({
 			data: {
 				...validatedData,
-				userId: user.id
+				userId: userId
 			},
 		});
 
 		// Update the user with the new companyId
 		await prisma.user.update({
-			where: { id: user.id },
+			where: { id: userId },
 			data: { companyId: newCompany.id }
 		});
 

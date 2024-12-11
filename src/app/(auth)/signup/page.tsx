@@ -35,6 +35,11 @@ export default function SignupPage() {
       }
 
       toast.success('Account created successfully');
+      signIn('credentials', {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
       router.push('/onboarding');
     } catch (error) {
       console.error('Signup error:', error);

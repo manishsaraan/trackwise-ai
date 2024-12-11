@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import React, { useEffect, useState } from 'react';
 
-import { saveCompanyData } from '@/app/actions/company';
+import {  saveCompanyData } from '@/app/actions/company';
 import UploadResume from '@/components/UploadResume';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -22,13 +22,15 @@ import {
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { ensureOnboarded } from '@/app/actions/onboarding-functions';
 
-const OnboardingSuccess = ({ onNavigate }: { onNavigate: (path: string) => void }) => {
+const OnboardingSuccess = () => {
 	const [countdown, setCountdown] = useState(5);
+	const router = useRouter();
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			onNavigate('/jobs');
+			router.push('/jobs');
 		}, 5000);
 
 		const countdownInterval = setInterval(() => {
@@ -39,7 +41,7 @@ const OnboardingSuccess = ({ onNavigate }: { onNavigate: (path: string) => void 
 			clearTimeout(timer);
 			clearInterval(countdownInterval);
 		};
-	}, [onNavigate]);
+	}, [router]);
 
 	return (
 		<div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -161,8 +163,21 @@ interface SaveCompanyResponse {
 const CompanyOnboarding = (): JSX.Element => {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isSubmitted, setIsSubmitted] = useState(false);
-	const router = useRouter();
+    const router = useRouter();
 
+	useEffect(() => {
+		const checkOnboarding = async () => {
+			const result = await ensureOnboarded();
+			console.log('result', result);
+			if (!result.isOnboarded && result.redirectTo) {
+			  router.push(result.redirectTo);
+			}
+
+			router.push('/jobs');
+		  };
+	  
+		  checkOnboarding();
+	}, [ensureOnboarded]);
 	const {
 		register,
 		handleSubmit,
@@ -213,6 +228,7 @@ const CompanyOnboarding = (): JSX.Element => {
 		try {
 			if (currentStep !== 3) {
 				await handleContinue();
+		
 				return;
 			}
 
@@ -283,12 +299,12 @@ const CompanyOnboarding = (): JSX.Element => {
 
 	// Show success component if submission is successful
 	if (isSubmitted) {
-		return <OnboardingSuccess onNavigate={path => router.push(path)} />;
+		return <OnboardingSuccess />;
 	}
 
 	return (
 		<div className="min-h-screen bg-base-200">
-			<div className="max-w-4xl mx-auto p-6">
+			<div className="max-w-4xl mx-auto p-6">			
 				{/* Combined Header and Progress */}
 				<div className="mb-8 text-center">
 					<h1 className="text-2xl font-bold mb-2">Setup Your Company Profile</h1>

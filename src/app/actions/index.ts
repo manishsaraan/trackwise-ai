@@ -1,19 +1,15 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-// Add this import
+import { getUserId } from '@/lib/server-utils';
 import { FormData, jobFormSchema, workModeEnum } from '@/lib/validations/job-form';
-import { stackServerApp } from '@/stack';
-// Ensure this path is correct for your Prisma client
 import { z } from 'zod';
-
-// Add this import
 
 export async function saveJobApplication(formData: FormData) {
 	try {
-		const user = await stackServerApp.getUser();
+		const userId = await getUserId();
 
-		if (!user) {
+		if (!userId) {
 			return {
 				success: false,
 				error: 'Authentication required',
@@ -23,7 +19,7 @@ export async function saveJobApplication(formData: FormData) {
 
 		// Get user's company
 		const userWithCompany = await prisma.user.findUnique({
-			where: { id: user.id },
+			where: { id: userId },
 			include: { company: true },
 		});
 

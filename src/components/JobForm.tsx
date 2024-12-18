@@ -8,6 +8,7 @@ import { FormData, jobFormSchema } from '@/lib/validations/job-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit, Info, Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import JobTitleInput from './JobTitleInput';
 
 const workModeOptions = [
 	{ value: 'On-site', label: 'On-site' },
@@ -172,21 +173,28 @@ export default function JobForm() {
 		});
 	};
 	console.log(errors);
+
+	const handleJobTitleSelect = (title: string) => {
+		setValue('jobTitle', title, {
+			shouldValidate: true,
+		});
+	};
+
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="max-w-5xl  p-6">
 			<div className="flex justify-between items-center mb-8">
 				<div>
-					<h2 className="text-2xl font-bold">Create a New Job Posting</h2>
+					<h2 className="text-2xl font-bold mb-4">Create a New Job Posting</h2>
 					<p className="text-base-content/60 text-sm">Fill out the form to post a new job opportunity.</p>
 				</div>
 			</div>
 
 			<div className="form-control w-full mb-6">
-				<label htmlFor="jobTitle" className="label">
-					<span className="label-text font-medium">Job Title:</span>
-				</label>
-				<input id="jobTitle" type="text" {...register('jobTitle')} className="input input-bordered w-full" />
-				{errors.jobTitle && <span className="text-error text-sm mt-1">{errors.jobTitle.message}</span>}
+				<JobTitleInput 
+					onSelect={handleJobTitleSelect} 
+					value={watch('jobTitle')}
+					error={errors.jobTitle?.message}
+				/>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -255,7 +263,7 @@ export default function JobForm() {
 						id="salaryMin"
 						type="number"
 						{...register('salaryMin', {
-							valueAsNumber: true,
+							setValueAs: (value) => (value === "" ? null : Number(value)),
 							disabled: dontPreferSalary,
 						})}
 						className={`input input-bordered w-full ${dontPreferSalary ? 'input-disabled bg-base-200' : ''}`}
@@ -274,7 +282,7 @@ export default function JobForm() {
 						id="salaryMax"
 						type="number"
 						{...register('salaryMax', {
-							valueAsNumber: true,
+							setValueAs: (value) => (value === "" ? null : Number(value)),
 							disabled: dontPreferSalary,
 						})}
 						className={`input input-bordered w-full ${dontPreferSalary ? 'input-disabled bg-base-200' : ''}`}

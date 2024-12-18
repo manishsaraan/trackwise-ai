@@ -1,11 +1,11 @@
 export const statusColors = {
-	APPROVED: 'success',
+	ACCEPTED: 'success',
 	IN_REVIEW: 'warning',
 	REJECTED: 'error',
 } as const;
 
 export const statusConfig = {
-	APPROVED: {
+	ACCEPTED: {
 		color: 'success',
 		bgColor: 'bg-success/10',
 		borderColor: 'border-success/20',

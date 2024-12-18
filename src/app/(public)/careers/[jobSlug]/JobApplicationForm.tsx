@@ -74,7 +74,7 @@ export function JobApplicationForm({ questions, jobId }: JobApplicationFormProps
 			};
 
 			const result = await saveApplicantData(submissionData);
-			console.log(result);
+
 			// Dismiss loading toast
 			toast.dismiss(loadingToast);
 

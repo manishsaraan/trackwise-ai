@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import React, { useEffect, useState } from 'react';
 
-import { saveCompanyData } from '@/app/actions/company';
+import {  saveCompanyData } from '@/app/actions/company';
 import UploadResume from '@/components/UploadResume';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -17,17 +17,21 @@ import {
 	Image as ImageIcon,
 	PartyPopper,
 	Users,
+	DollarSign,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { ensureOnboarded } from '@/app/actions/onboarding-functions';
+import { useSession } from 'next-auth/react';
 
-const OnboardingSuccess = ({ onNavigate }: { onNavigate: (path: string) => void }) => {
+const OnboardingSuccess = () => {
 	const [countdown, setCountdown] = useState(5);
+	const router = useRouter();
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			onNavigate('/jobs');
+			router.push('/jobs');
 		}, 5000);
 
 		const countdownInterval = setInterval(() => {
@@ -38,7 +42,7 @@ const OnboardingSuccess = ({ onNavigate }: { onNavigate: (path: string) => void 
 			clearTimeout(timer);
 			clearInterval(countdownInterval);
 		};
-	}, [onNavigate]);
+	}, [router]);
 
 	return (
 		<div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -121,6 +125,7 @@ const step1Schema = z.object({
 	]),
 	city: z.string().min(2, 'City is required'),
 	country: z.string().min(2, 'Country is required'),
+	preferredCurrency: z.enum(['USD', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'SGD', 'AED']),
 });
 
 const step2Schema = z.object({
@@ -159,8 +164,22 @@ interface SaveCompanyResponse {
 const CompanyOnboarding = (): JSX.Element => {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isSubmitted, setIsSubmitted] = useState(false);
-	const router = useRouter();
+	const { update, data: session, status } = useSession();
+    const router = useRouter();
 
+	// useEffect(() => {
+	// 	const checkOnboarding = async () => {
+	// 		const result = await ensureOnboarded();
+	// 		console.log('result', result);
+	// 		if (!result.isOnboarded && result.redirectTo) {
+	// 		  router.push(result.redirectTo);
+	// 		}
+
+	// 		router.push('/jobs');
+	// 	  };
+	  
+	// 	  checkOnboarding();
+	// }, [ensureOnboarded]);
 	const {
 		register,
 		handleSubmit,
@@ -211,6 +230,7 @@ const CompanyOnboarding = (): JSX.Element => {
 		try {
 			if (currentStep !== 3) {
 				await handleContinue();
+		
 				return;
 			}
 
@@ -225,6 +245,7 @@ const CompanyOnboarding = (): JSX.Element => {
 			const result = (await saveCompanyData(companyData)) as SaveCompanyResponse;
 
 			if (result.success) {
+				await update({})
 				setIsSubmitted(true);
 			} else {
 				if (result.errors) {
@@ -268,9 +289,20 @@ const CompanyOnboarding = (): JSX.Element => {
 		},
 	];
 
+	const currencies = [
+		{ code: 'USD', symbol: '$', name: 'US Dollar' },
+		{ code: 'EUR', symbol: '€', name: 'Euro' },
+		{ code: 'GBP', symbol: '£', name: 'British Pound' },
+		{ code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+		{ code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+		{ code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+		{ code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
+		{ code: 'AED', symbol: 'د.إ', name: 'UAE Dirham' },
+	];
+
 	// Show success component if submission is successful
 	if (isSubmitted) {
-		return <OnboardingSuccess onNavigate={path => router.push(path)} />;
+		return <OnboardingSuccess />;
 	}
 
 	return (
@@ -434,6 +466,63 @@ const CompanyOnboarding = (): JSX.Element => {
 										</div>
 									</div>
 								</div>
+
+								<div className="form-control">
+									<label className="label">
+										<span className="label-text font-medium">Preferred Currency</span>
+										<span className="label-text-alt text-base-content/60">
+											For job postings and salary ranges
+										</span>
+									</label>
+									<div className="relative">
+										<DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
+										<select
+											{...register('preferredCurrency')}
+											className={`select select-bordered w-full pl-10 ${
+												errors.preferredCurrency ? 'select-error' : ''
+											}`}
+											defaultValue=""
+										>
+											<option value="" disabled>Select currency</option>
+											{currencies.map(currency => (
+												<option key={currency.code} value={currency.code}>
+													{currency.symbol} - {currency.name} ({currency.code})
+												</option>
+											))}
+										</select>
+									</div>
+									{errors.preferredCurrency && (
+										<label className="label">
+											<span className="label-text-alt text-error">
+												{errors.preferredCurrency.message}
+											</span>
+										</label>
+									)}
+								</div>
+
+								{/* Currency Preview Card */}
+								{watch('preferredCurrency') && (
+									<div className="bg-base-200/50 rounded-lg p-4 border border-base-300">
+										<h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+											<DollarSign className="w-4 h-4" />
+											Currency Preview
+										</h4>
+										<div className="space-y-2 text-sm">
+											<div className="flex items-center justify-between">
+												<span className="text-base-content/70">Salary Display</span>
+												<span className="font-medium">
+													{currencies.find(c => c.code === watch('preferredCurrency'))?.symbol}50,000
+												</span>
+											</div>
+											<div className="flex items-center justify-between">
+												<span className="text-base-content/70">Range Format</span>
+												<span className="font-medium">
+													{currencies.find(c => c.code === watch('preferredCurrency'))?.symbol}40,000 - {currencies.find(c => c.code === watch('preferredCurrency'))?.symbol}60,000
+												</span>
+											</div>
+										</div>
+									</div>
+								)}
 							</div>
 						)}
 						{currentStep === 2 && (

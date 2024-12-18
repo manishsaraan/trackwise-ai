@@ -1,16 +1,13 @@
 'use client';
-
-import { useStackApp } from '@stackframe/stack';
+ 
 
 export default function CustomOAuthSignIn() {
-	const app = useStackApp();
+ 
 
 	return (
 		<div>
 			<button
-				onClick={async () => {
-					await app.signInWithOAuth('google');
-				}}
+				 
 				className="flex items-center justify-center gap-3 w-full max-w-md px-6 py-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">

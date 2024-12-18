@@ -81,7 +81,7 @@ model Applicant {
   phone                String
   resumeUrl            String
   explanation          String?
-  currentSalary        Int
+  currentSalary        Int?
   receiveNotifications Boolean          @default(false)
   status               ApplicantStatus  @default(PENDING)
   statusUpdatedAt      DateTime?
@@ -112,31 +112,35 @@ model QuestionAnswer {
 }
 
 model User {
-  id                   String   @id @default(uuid())
-  displayName          String
-  primaryEmail         String   @unique
-  primaryEmailVerified Boolean  @default(false)
-  profileImageUrl      String?  @db.Text
-  signedUpAt           DateTime @default(now())
-  oauthProviders       Json[] // Will store array of provider objects
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id              String    @id @default(uuid())
+  email           String    @unique
+  hashedPassword  String
+  name            String?
+  company         Company?  @relation(fields: [companyId], references: [id])
+  companyId       Int?      @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([companyId])
 }
 
 model Company {
-  id          Int              @id @default(autoincrement())
-  companyName String
-  description String           @db.Text
-  companySize String
-  foundedYear Int
-  city        String
-  country     String
-  website     String?
-  linkedIn    String?
-  logo        String?
-  jobs        JobApplication[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id                Int              @id @default(autoincrement())
+  companyName       String
+  description       String           @db.Text
+  companySize       String
+  foundedYear       Int
+  city             String
+  country          String
+  website          String?
+  linkedIn         String?
+  logo             String?
+  preferredCurrency String           @default("USD")
+  jobs             JobApplication[]
+  user             User?           
+  userId           String           @unique
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   @@index([companyName])
 }

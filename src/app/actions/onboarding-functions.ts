@@ -1,24 +1,34 @@
 'use server';
 
-import { redirect } from 'next/navigation';
+import { getSession, getUserId } from '@/lib/server-utils';
+import prisma from '@/lib/prisma'; 
 
-import { stackServerApp } from '@/stack';
+interface OnboardingCheckResult {
+	isOnboarded: boolean;
+	redirectTo?: string;
+}
 
-export async function ensureOnboarded() {
-	const user = await stackServerApp.getUser();
-	console.log('user', user?.serverMetadata);
-	if (!user?.serverMetadata?.onboarded) {
-		return redirect('/onboarding');
+export async function ensureOnboarded(): Promise<OnboardingCheckResult> {
+	try {
+		const session = await getSession();		
+
+		if(session?.user?.company) {
+			return { isOnboarded: true };
+		}
+
+		return { isOnboarded: false, redirectTo: '/onboarding' };
+
+	} catch (error) {
+		console.error('Error in ensureOnboarded:', error);
+		return { isOnboarded: false, redirectTo: '/login' };
 	}
 }
 
 export async function saveOnboardingData(companyInfo: any) {
-	const user = await stackServerApp.getUser();
-	console.log('user', user);
+	const userId = await getUserId();
+
 	try {
-		await user?.update({
-			serverMetadata: { onboarded: true, ...companyInfo },
-		});
+		 
 	} catch (error) {
 		console.error(error);
 	}

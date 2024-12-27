@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { statusConfig } from '@/utils/theme';
+import { statusConfig } from '@/constants/theme';
 import {
 	AlertCircle,
 	Brain,
@@ -17,8 +17,8 @@ import {
 import { toast } from 'sonner';
 import { useState, useRef, useEffect } from 'react';
 
-import ContactInfo from './ContactInfo';
-import { updateApplicantStatus } from '@/app/actions/applicant';
+import ContactInfo from '@/components/applicant-contact-info';
+import { updateApplicantStatus } from '@/lib/actions/applicant';
 import { ApplicantStatus } from '@prisma/client';
 
 interface Applicant {

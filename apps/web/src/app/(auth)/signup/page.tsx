@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 import AuthForm, { AuthFormData } from '@/components/auth-form/ index';
-import { createUser } from '@/app/actions/auth';
+import { createUser } from '@/lib/actions/auth';
 
 export default function SignupPage() {
   const router = useRouter();

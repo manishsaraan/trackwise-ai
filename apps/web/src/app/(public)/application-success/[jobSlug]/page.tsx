@@ -82,16 +82,6 @@ const ApplicationSuccessPage = () => {
 						</div>
 					</div>
 				</div>
-
-				{/* Reference Number Card */}
-				<div className="card bg-base-100 shadow-xl mt-4">
-					<div className="card-body p-4">
-						<div className="flex justify-between items-center text-sm">
-							<span className="text-base-content/70">Application Reference:</span>
-							<span className="font-mono font-medium">APP-2024-8761</span>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	);

@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { getJobBySlug } from '@/app/actions';
-import { getAllApplicants } from '@/app/actions/applicant';
+import { getJobBySlug } from '@/lib/actions/job';
+import { getAllApplicants } from '@/lib/actions/applicant';
 import StatusTabs from '@/components/status-tabs';
-import StatusTabsFactory from '@/factories/statusTabsFactory';
+import StatusTabsFactory from '@/utils/factories/statusTabsFactory';
 
-import ApplicantCard from './ApplicantCard';
+import ApplicantCard from '@/components/applicant-card';
 
 type ApplicantStatus = 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED';
 

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { saveJobApplication } from '@/app/actions';
+import { saveJobApplication } from '@/lib/actions/job';
 import { FormData, jobFormSchema } from '@/lib/validations/job-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit, Info, Plus } from 'lucide-react';

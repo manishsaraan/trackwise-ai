@@ -4,7 +4,7 @@ import { AlertCircle, Briefcase, Calendar, CheckCircle2, MapPin, Monitor, Users,
 import { LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import JobActions from './JobActions';
+import JobActions from '@/components/job-item-actions';
 
 interface StatisticItemProps {
 	count: number;

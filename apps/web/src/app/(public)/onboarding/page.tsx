@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import React, { useEffect, useState } from 'react';
 
-import {  saveCompanyData } from '@/app/actions/company';
+import {  saveCompanyData } from '@/lib/actions/company';
 import UploadResume from '@/components/upload-resume';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {

@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 
-import { getJobBySlug } from '@/app/actions';
+import { getJobBySlug } from '@/lib/actions/job';
 import { Briefcase, Building2, Calendar, Clock, DollarSign, ExternalLink, Globe, Linkedin, MapPin } from 'lucide-react';
 
-import { JobApplicationForm } from './JobApplicationForm';
+import { JobApplicationForm } from '@/components/job-applicant-form';
 
 async function JobApplicationPage({ params }: { params: { jobSlug: string } }) {
 	const jobData = await getJobBySlug(params.jobSlug);

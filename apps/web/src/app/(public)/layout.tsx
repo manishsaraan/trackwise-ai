@@ -1,39 +1,13 @@
-import Link from 'next/link';
-
-import { Github } from 'lucide-react';
+import { TopBar } from '@ats/ui';
 
 interface PublicLayoutProps {
 	children: React.ReactNode;
 }
 
 export default function PublicLayout({ children }: PublicLayoutProps) {
-	const showGithub = true;
-
 	return (
 		<div className="min-h-screen">
-			{/* Topbar */}
-			<header className="fixed top-0 left-0 right-0 h-16     backdrop-blur-sm z-40">
-				<div className="container mx-auto px-4 h-full flex items-center justify-between">
-					{/* Logo */}
-					<Link href="/" className="text-xl font-bold tracking-tight hover:text-primary transition-colors">
-						TrackWiseAI
-					</Link>
-
-					{/* GitHub Button - Only show if prop is true */}
-					{showGithub && (
-						<a
-							href="https://github.com/yourusername/yourrepo"
-							className="btn btn-outline gap-2"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<Github className="w-4 h-4" />
-							View on GitHub
-						</a>
-					)}
-				</div>
-			</header>
-
+			<TopBar />
 			{/* Main Content - Add padding-top to account for fixed header */}
 			<main className="pt-16">{children}</main>
 		</div>

@@ -4,17 +4,22 @@
   "description": "",
   "main": "index.js",
   "private": true,
-  "scripts": {
+"scripts": {
     "preinstall": "npx only-allow pnpm",
-	"db:generate": "turbo run db:generate",
+    "db:generate": "turbo run db:generate",
     "db:deploy": "turbo run db:deploy",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "web:dev": "turbo run dev --filter=web...",
-    "web:build": "turbo run build --filter=web..."
+    "web:dev": "turbo run dev --filter=@ats/web...",
+    "web:build": "turbo run build --filter=@ats/web...",
+    "marketing:dev": "turbo run dev --filter=@ats/marketing...",
+    "marketing:build": "turbo run build --filter=@ats/marketing...",
+    "start": "turbo run start",
+    "start:web": "turbo run start --filter=@ats/web",
+    "start:marketing": "turbo run start --filter=@ats/marketing"
   },
   "devDependencies": {
     "turbo": "latest",

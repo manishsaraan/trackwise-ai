@@ -107,4 +107,4 @@ function AuthForm({ onSubmit, authType }: AuthFormProps) {
     );
   }
 
-  export default AuthForm;
+export default AuthForm;

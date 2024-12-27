@@ -1,4 +1,4 @@
-export interface Job {
+export type Job = {
 	id: number;
 	title: string;
 	company: string;
@@ -8,5 +8,13 @@ export interface Job {
 	description: string;
 	requirements: string[];
 	companyDescription: string;
-	// Add any other relevant fields
+}
+
+
+export type ActionJobData = {
+	id: number;
+	title: string;
+	acceptedCount?: number;
+	inReviewCount?: number;
+	rejectedCount?: number;
 }

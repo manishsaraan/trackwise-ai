@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { toast } from 'sonner'; 
-import AuthForm, { AuthFormData } from '@/components/auth-form/ index';
+import AuthForm from '@/components/auth-form';
+import { AuthFormData } from '@/lib/validations/auth';
 
 export default function LoginPage() {
   const router = useRouter();

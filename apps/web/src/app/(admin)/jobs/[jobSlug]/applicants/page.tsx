@@ -6,30 +6,7 @@ import StatusTabs from '@/components/status-tabs';
 import StatusTabsFactory from '@/utils/factories/statusTabsFactory';
 
 import ApplicantCard from '@/components/applicant-card';
-
-type ApplicantStatus = 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED';
-
-// Add interfaces for the data structures
-interface Job {
-	id: number;
-	title: string;
-	acceptedCount?: number;
-	inReviewCount?: number;
-	rejectedCount?: number;
-}
-
-interface Applicant {
-	id: number;
-	status: ApplicantStatus;
-	createdAt: Date;
-	updatedAt: Date;
-	email: string;
-	jobApplicationId: number;
-	firstName: string;
-	lastName: string;
-	phone: string;
-	aiProcessed: boolean;
-}
+import { ActionJobData, Applicant, StatusTabConfig } from '@/types';
 
 export default async function ApplicantsPage({
 	params,
@@ -38,7 +15,7 @@ export default async function ApplicantsPage({
 	params: { jobSlug: string };
 	searchParams: { status?: string };
 }): Promise<JSX.Element> {
-	const job: Job | null = await getJobBySlug(params.jobSlug);
+	const job:ActionJobData | null = await getJobBySlug(params.jobSlug);
 	const status = searchParams.status || 'ACCEPTED';
 	const applicants: any = await getAllApplicants({ status, jobId: job?.id || 0 });
 
@@ -46,14 +23,7 @@ export default async function ApplicantsPage({
 		ACCEPTED: job?.acceptedCount || 0,
 		IN_REVIEW: job?.inReviewCount || 0,
 		REJECTED: job?.rejectedCount || 0,
-	} as const) as {
-		id: string;
-		label: string;
-		count?: number;
-		iconName: 'CheckCircle2' | 'Clock' | 'XCircle' | 'CheckCircle';
-		color: string;
-		description: string;
-	}[];
+	} as const) as StatusTabConfig[];
 
 	const { success, data: applicantsData } = applicants;
 

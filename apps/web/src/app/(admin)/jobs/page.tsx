@@ -6,6 +6,7 @@ import StatusTabsFactory from '@/utils/factories/statusTabsFactory';
 import { JobStatus } from '@prisma/client';
 import { Plus } from 'lucide-react';
 import JobListingsClient from '@/components/job-listing';
+import { StatusTabConfig } from '@/types';
 
 async function JobListingsDashboard({ searchParams: { status } }: { searchParams: { status?: string } }) {
 	const jobs = await getAllJobs(status as JobStatus);
@@ -21,14 +22,7 @@ async function JobListingsDashboard({ searchParams: { status } }: { searchParams
 	const statusTabs = StatusTabsFactory.createStatusTabs('jobs', {
 		ACTIVE: transformedJobs?.filter(job => job.status === 'ACTIVE').length || 0,
 		CLOSED: transformedJobs?.filter(job => job.status === 'CLOSED').length || 0,
-	}) as {
-		id: string;
-		label: string;
-		count?: number;
-		iconName: 'CheckCircle2' | 'Clock' | 'XCircle' | 'CheckCircle';
-		color: string;
-		description: string;
-	}[];
+	}) as StatusTabConfig[];
 
 	return (
 		<div className="min-h-screen bg-base-100">

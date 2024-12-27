@@ -1,0 +1,28 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": ["**/.env.*local"],
+    "tasks": {
+      "build": {
+        "dependsOn": ["^build"],
+        "outputs": [".next/**", "!.next/cache/**"]
+      },
+      "db:generate": {
+          "cache": false
+      },
+      "db:deploy": {
+        "cache": false
+      },
+      "lint": {
+        "outputs": []
+      },
+      "start": {
+        "dependsOn": ["build"],
+        "cache": false
+      },
+      "dev": {
+        "cache": false,
+        "persistent": true,
+        "dependsOn": ["db:generate"]
+      }
+    }
+  }

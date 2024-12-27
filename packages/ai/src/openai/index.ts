@@ -1,6 +1,6 @@
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ChatOpenAI } from '@langchain/openai';
-import { AI_MODEL } from '@/constants';
+import { AI_MODEL } from '../constants';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 

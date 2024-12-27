@@ -1,8 +1,8 @@
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import axios from 'axios';
 import path from 'path';
-import { extractResumeInfoFn, extractJobDescriptionFn, scoringPrompt} from '@/lib/ai/prompts'
-import { getModel } from '@/lib/ai/openai';
+import { extractResumeInfoFn, extractJobDescriptionFn, scoringPrompt} from '../prompts'
+import { getModel } from '../openai';
 
 export function formatResumeData(resumeData: any) {
 	let formattedResume = '';

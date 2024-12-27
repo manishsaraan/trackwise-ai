@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getScoringData, parseResume } from '@/lib/ai/utilities';
+import { getScoringData, parseResume } from '@ats/ai';
 import prisma from '@/lib/prisma';
 import { ApplicantStatus } from '@prisma/client';
 import { Receiver } from '@upstash/qstash';

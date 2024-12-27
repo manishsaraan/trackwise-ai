@@ -4,15 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { z } from 'zod';
+import { authSchema, AuthFormData } from '@/lib/validations/auth';
 
-const authSchema = z.object({
-    email: z.string().min(1, 'Email is required').email('Invalid email format'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-  });
-  
- export type AuthFormData = z.infer<typeof authSchema>;
-  
   interface AuthFormProps {
     onSubmit: (data: AuthFormData) => Promise<void>;
     authType: 'login' | 'signup';
@@ -114,4 +107,4 @@ function AuthForm({ onSubmit, authType }: AuthFormProps) {
     );
   }
 
-  export default AuthForm;
+export default AuthForm;

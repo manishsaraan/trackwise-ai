@@ -1,4 +1,4 @@
-import { StatusTabConfig } from '@/types/statusTabs';
+import { StatusTabConfigWithoutIcon } from '@/types/statusTabs';
 
 class StatusTabsFactory {
 	private static baseConfig = {
@@ -38,7 +38,7 @@ class StatusTabsFactory {
 		},
 	};
 
-	static createStatusTabs(type: 'jobs' | 'applicants', counts?: Record<string, number>): StatusTabConfig[] {
+	static createStatusTabs(type: 'jobs' | 'applicants', counts?: Record<string, number>): StatusTabConfigWithoutIcon[] {
 		const config = this.baseConfig[type];
 
 		return Object.entries(config).map(([id, details]) => ({

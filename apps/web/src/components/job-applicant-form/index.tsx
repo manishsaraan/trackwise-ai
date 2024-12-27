@@ -4,35 +4,12 @@ import { useRouter } from 'next/navigation';
 
 import React from 'react';
 
-import { saveApplicantData } from '@/app/actions/applicant';
+import { saveApplicantData } from '@/lib/actions/applicant';
 import UploadResume from '@/components/upload-resume';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
-
-// Validation schema
-const applicationSchema = z.object({
-	firstName: z.string().min(1, 'First name is required'),
-	lastName: z.string().min(1, 'Last name is required'),
-	email: z.string().min(1, 'Email is required').email('Invalid email format'),
-	phone: z
-		.string()
-		.min(1, 'Phone number is required')
-		.regex(/^[0-9+\-\s()]+$/, 'Invalid phone number format'),
-	currentCtc: z
-		.string()
-		.min(1, 'Current CTC is required')
-		.regex(/^\d+$/, 'Please enter a valid number')
-		.transform(val => parseInt(val, 10))
-		.refine(val => val >= 0, 'CTC cannot be negative')
-		.refine(val => val <= 100000000, 'Please enter a reasonable amount'),
-	resume: z.string().min(1, 'Resume is required'),
-	receiveEmails: z.boolean().optional(),
-	answers: z.array(z.string().min(50, 'Answer must be at least 50 characters long')).optional(),
-});
-
-type ApplicationFormData = z.infer<typeof applicationSchema>;
+import { applicationFormSchema, JobApplicationFormData } from '@/lib/validations/applicant';
 
 interface JobApplicationFormProps {
 	questions: string[];
@@ -47,15 +24,15 @@ export function JobApplicationForm({ questions, jobId }: JobApplicationFormProps
 		formState: { errors, isSubmitting },
 		watch,
 		setValue,
-	} = useForm<ApplicationFormData>({
-		resolver: zodResolver(applicationSchema),
+	} = useForm<JobApplicationFormData>({
+		resolver: zodResolver(applicationFormSchema),
 		defaultValues: {
 			receiveEmails: false,
 			answers: questions.map(() => ''),
 		},
 	});
 
-	const onSubmit = async (data: ApplicationFormData) => {
+	const onSubmit = async (data: JobApplicationFormData) => {
 		try {
 			// Show loading toast
 			const loadingToast = toast.loading('Submitting your application...');
@@ -66,9 +43,8 @@ export function JobApplicationForm({ questions, jobId }: JobApplicationFormProps
 				lastName: data.lastName,
 				email: data.email,
 				phone: data.phone,
-				resumeUrl: data.resume,
-				currentSalary: parseInt(data.currentCtc.toString()),
-				receiveNotifications: data.receiveEmails || false,
+				resume: data.resume,
+				receiveEmails: data.receiveEmails || false,
 				jobApplicationId: jobId,
 				answers: data.answers || [],
 			};
@@ -182,22 +158,7 @@ export function JobApplicationForm({ questions, jobId }: JobApplicationFormProps
 							)}
 						</div>
 
-						<div className="form-control">
-							<label className="label">
-								<span className="label-text">Current CTC (per annum)</span>
-							</label>
-							<input
-								type="text"
-								className={`input input-bordered w-full ${errors.currentCtc ? 'input-error' : ''}`}
-								placeholder="Enter amount in USD"
-								{...register('currentCtc')}
-							/>
-							{errors.currentCtc && (
-								<label className="label">
-									<span className="label-text-alt text-error">{errors.currentCtc.message}</span>
-								</label>
-							)}
-						</div>
+
 					</div>
 
 					<div className="form-control">

@@ -6,8 +6,6 @@ import { LogOut, Mail, Shield } from 'lucide-react';
 function ProfilePage() {
 	const { data: session } = useSession();
 
- 
-
 	return (
 		<div className="max-w-3xl mx-auto p-6">
 			{/* Profile Header Card */}

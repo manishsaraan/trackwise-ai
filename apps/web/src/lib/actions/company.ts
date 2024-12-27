@@ -2,25 +2,13 @@
 
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { onboardingSchema, OnboardingFormData } from '@/lib/validations/onboarding';
  
 import {  getUserId } from '@/lib/server-utils';
 
-const companySchema = z.object({
-	companyName: z.string().min(1, 'Company name is required'),
-	description: z.string().min(1, 'Description is required'),
-	companySize: z.string().min(1, 'Company size is required'),
-	foundedYear: z.number().min(1800).max(new Date().getFullYear()),
-	city: z.string().min(1, 'City is required'),
-	country: z.string().min(1, 'Country is required'),
-	website: z.string().url('Company website URL is required'),
-	linkedIn: z.string().url('LinkedIn URL is required'),
-	logo: z.string().url('Company logo is required'),
-	preferredCurrency: z.string().min(1, 'Preferred currency is required'),
-});
 
-type CompanyData = z.infer<typeof companySchema>;
 
-export async function saveCompanyData(data: CompanyData) {
+export async function saveCompanyData(data: OnboardingFormData) {
 	try {
 		const userId = await getUserId();
 		
@@ -32,7 +20,7 @@ export async function saveCompanyData(data: CompanyData) {
 			};
 		}
 
-		const validatedData = companySchema.parse(data);
+		const validatedData = onboardingSchema.parse(data);
 
 		// Create the company with associated userId
 		const newCompany = await prisma.company.create({

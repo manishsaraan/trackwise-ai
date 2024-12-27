@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { uploadResume } from '@/app/actions/applicant';
+import { uploadResume } from '@/lib/actions/applicant';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 
 interface UploadResumeProps {

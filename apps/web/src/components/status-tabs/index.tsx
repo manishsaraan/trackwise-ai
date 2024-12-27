@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { CheckCircle, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { StatusTabConfig } from '@/types';
 
 const iconMap = {
 	CheckCircle2: CheckCircle2,
@@ -12,14 +13,7 @@ const iconMap = {
 };
 
 interface StatusTabsProps {
-	statusTabs: Array<{
-		id: string;
-		label: string;
-		count?: number;
-		iconName: keyof typeof iconMap;
-		color: string;
-		description: string;
-	}>;
+	statusTabs: Array<StatusTabConfig>;
 	defaultTab: string;
 }
 

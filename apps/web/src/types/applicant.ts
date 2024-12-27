@@ -1,4 +1,4 @@
-export interface Applicant {
+export type Applicant = {
 	id: number;
 	name: string;
 	location: string;
@@ -12,7 +12,9 @@ export interface Applicant {
 	resumeUrl?: string;
 	email: string;
 	phone: string;
-	status: 'accepted' | 'in-review' | 'rejected' | undefined;
+	status: ApplicantStatus;
 	technical_skills: string[];
 	immediateJoiner: boolean;
 }
+
+type ApplicantStatus = 'PENDING' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED';

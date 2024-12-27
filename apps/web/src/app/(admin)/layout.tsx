@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 
 import Navigation from '@/components/topbar';
 import Footer from '@/components/footer';
-import Sidebar from '@/components/sidebar'; 
-import '../globals.css'; 
+import Sidebar from '@/components/sidebar';
 
 export const metadata: Metadata = {
 	title: 'ATS App',

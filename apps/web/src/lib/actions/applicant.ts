@@ -4,28 +4,14 @@ import prisma from '@/lib/prisma';
 import { queueResumeProcessing } from '@/lib/upstash/queue';
 import { put } from '@vercel/blob';
 import { z } from 'zod';
+import { jobApplicationSchema, jobApplicationSchemaData } from '@/lib/validations/applicant';
 import { revalidatePath } from 'next/cache';
 import { ApplicantStatus } from '@prisma/client';
 
-// Update the schema for the applicant data
-const applicantSchema = z.object({
-	firstName: z.string().min(1, 'First name is required'),
-	lastName: z.string().min(1, 'Last name is required'),
-	email: z.string().email('Invalid email address'),
-	phone: z.string().min(1, 'Phone number is required'),
-	resumeUrl: z.string().url('Invalid resume URL'),
-	currentSalary: z.number().min(0, 'Salary cannot be negative'),
-	receiveNotifications: z.boolean(),
-	jobApplicationId: z.number().int().positive('Invalid job application ID'),
-	answers: z.array(z.string().min(50, 'Answer must be at least 50 characters')),
-});
-
-type ApplicantData = z.infer<typeof applicantSchema>;
-
-export async function saveApplicantData(data: ApplicantData) {
+export async function saveApplicantData(data: jobApplicationSchemaData) {
 	try {
 		// Validate the input data
-		const validatedData = applicantSchema.parse(data);
+		const validatedData = jobApplicationSchema.parse(data);
 
 		// Get the job questions to map with answers
 		const job = await prisma.jobApplication.findUnique({
@@ -52,25 +38,26 @@ export async function saveApplicantData(data: ApplicantData) {
 					lastName: validatedData.lastName,
 					email: validatedData.email,
 					phone: validatedData.phone,
-					resumeUrl: validatedData.resumeUrl,
-					currentSalary: validatedData.currentSalary,
-					receiveNotifications: validatedData.receiveNotifications,
+					resumeUrl: validatedData.resume,
+					receiveNotifications: validatedData.receiveEmails,
 					jobApplicationId: validatedData.jobApplicationId,
 				},
 			});
 
 			// Create answers for each question
-			const answerPromises = job.questions.map((question: any, index: number) => {
-				return tx.questionAnswer.create({
-					data: {
-						answer: validatedData.answers[index],
-						questionId: question.id,
-						applicantId: applicant.id,
-					},
+			if(validatedData.answers && (validatedData.answers.length !== job.questions.length)) {
+				const answerPromises = job.questions.map((question: any, index: number) => {
+					return tx.questionAnswer.create({
+						data: {
+							answer: validatedData.answers[index],
+							questionId: question.id,
+							applicantId: applicant.id,
+						},
+					});
 				});
-			});
 
-			await Promise.all(answerPromises);
+				await Promise.all(answerPromises);
+		}
 
 			return applicant;
 		});

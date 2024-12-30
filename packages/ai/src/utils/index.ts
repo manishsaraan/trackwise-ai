@@ -200,7 +200,6 @@ export async function parseResume(pdfUrl: string, jobDescription:string): Promis
 
 export async function getScoringData(parsedPdfData: any, jobDescription: string) {
 	const getPrompt = scoringPrompt(parsedPdfData, jobDescription);
-console.log(getPrompt,"*dfdf")
 	const chain1 = getModel();
 	const response2 = await chain1.invoke({
 		input: getPrompt,

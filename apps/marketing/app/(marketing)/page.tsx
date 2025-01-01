@@ -65,7 +65,7 @@ const LandingPage = () => {
 							<div className="flex items-center justify-center gap-4 mb-8">
 							 
 								<a
-									href="https://github.com/yourusername/yourrepo"
+									href="https://github.com/manishsaraan/trackwise-ai"
 									className="btn btn-outline gap-2"
 									target="_blank"
 									rel="noopener noreferrer"
@@ -107,7 +107,7 @@ const LandingPage = () => {
 					<div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
 						<iframe
 							className="w-full h-full"
-							src="https://www.youtube.com/embed/your-video-id"
+							src="https://www.youtube.com/embed/6ExPVdc-0TY?si=hIH0vREP0z_xbFyv"
 							title="Product Demo"
 							frameBorder="0"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -425,14 +425,14 @@ const LandingPage = () => {
 								<pre className="bg-base-200 rounded-lg p-4 text-sm">
 									<code>
 										# Clone the repository{'\n'}
-										git clone https://github.com/yourusername/yourrepo{'\n\n'}# Install dependencies{'\n'}
+										git clone https://github.com/manishsaraan/trackwise-ai{'\n\n'}# Install dependencies{'\n'}
 										npm install{'\n\n'}# Start the application{'\n'}
 										npm run dev
 									</code>
 								</pre>
 								<div className="card-actions justify-end mt-4">
 									<a
-										href="https://github.com/yourusername/yourrepo"
+										href="https://github.com/manishsaraan/trackwise-ai"
 										className="btn btn-primary btn-sm gap-2"
 										target="_blank"
 										rel="noopener noreferrer"
@@ -459,7 +459,7 @@ const LandingPage = () => {
 					<div className="flex justify-center gap-4">
 					 
 						<a
-							href="https://github.com/yourusername/yourrepo"
+							href="https://github.com/manishsaraan/trackwise-ai"
 							className="btn btn-outline gap-2"
 							target="_blank"
 							rel="noopener noreferrer"

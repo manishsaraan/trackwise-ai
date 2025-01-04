@@ -63,6 +63,7 @@ const authOptions: NextAuthConfig = {
     signIn: "/login",
   },
   debug: true,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, trigger }: {
       token: JWT;

@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img alt="Landing Page" src="./.github/landing.png">
+  <img alt="Landing Page" src="./.github/screenshots/landing.png">
   <b>Landing Page</b><br>
   <sub>💥 Landing page showcasing features and benefits 💥</sub>
 </p>

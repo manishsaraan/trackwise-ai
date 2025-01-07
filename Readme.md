@@ -73,7 +73,7 @@ TrackWiseAI is an innovative Applicant Tracking System designed to streamline hi
 
 1. Clone the repository with `git clone https://github.com/manishsaraan/trackwise-ai.git`
 2. Install dependencies with `yarn install`
-3. Set up environment variables (check `.env.example`)
+3. Set up environment variables (check `.env.example` [here](https://github.com/manishsaraan/trackwise-ai/tree/main/apps/web/.env.example))
 4. Run the project with `yarn dev`
 
 Visit: [http://localhost:3000](http://localhost:3000) to view the app.

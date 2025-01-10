@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth, { DefaultSession, NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "./prisma";
 import bcryptjs from "bcryptjs";
@@ -63,6 +63,7 @@ const authOptions: NextAuthConfig = {
     signIn: "/login",
   },
   debug: true,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user, trigger }: {
       token: JWT;
@@ -101,4 +102,8 @@ export const {
   handlers: { GET, POST },
   auth, 
   signOut,
-} = NextAuth(authOptions);
+} = NextAuth(authOptions) as {
+  handlers: { GET: any; POST: any };
+  auth: (req: any, res: any) => Promise<DefaultSession | null>;
+  signOut: () => Promise<void>;
+};

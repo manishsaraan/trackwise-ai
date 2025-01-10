@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma';
 import { getCompanyId, getUserId } from '@/lib/server-utils';
 import { FormData, jobFormSchema, workModeEnum } from '@/lib/validations/job-form';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 export async function saveJobApplication(formData: FormData) {
@@ -77,6 +78,7 @@ export async function saveJobApplication(formData: FormData) {
 			});
 		});
 
+		revalidatePath('/jobs')
 		return {
 			success: true,
 			job: savedJob,

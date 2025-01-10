@@ -14,6 +14,8 @@ export default function TopNavBar() {
 					TrackWiseAI
 				</Link>
 				
+				{session ? (
+					
 				<div className="dropdown dropdown-end">
 					<div 
 						tabIndex={0} 
@@ -61,6 +63,7 @@ export default function TopNavBar() {
 						</li>
 					</ul>
 				</div>
+			) : null}
 			</div>
 		</header>
 	);

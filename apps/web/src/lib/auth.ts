@@ -60,7 +60,8 @@ const authOptions: NextAuthConfig = {
     strategy: "jwt" as const,
   },
   pages: {
-    signIn: "/login",
+    error: '/api/auth/error',
+    signIn: '/login',
   },
   debug: true,
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,

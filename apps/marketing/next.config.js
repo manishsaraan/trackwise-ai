@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  toolbar: false
 };
 
 module.exports = nextConfig;
